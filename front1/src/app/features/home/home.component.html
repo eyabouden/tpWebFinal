@@ -1,79 +1,39 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Research Platform</title>
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom styles -->
   <style>
     body {
-      background-color: #f8f9fa;
+      background-color: #f4f6f9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .search-container {
       max-width: 700px;
       margin: 0 auto;
     }
-    .search-icon {
-      color: #6c757d;
-    }
     .card {
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       border: none;
-      margin-bottom: 24px;
+      transition: transform 0.2s ease-in-out;
     }
-    .card-header {
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      font-weight: 600;
+    .card:hover {
+      transform: scale(1.02);
     }
-    .btn-outline-primary {
-      border-radius: 20px;
-      padding: 0.375rem 1.2rem;
-    }
-    .btn-outline-success {
-      border-radius: 20px;
-      padding: 0.25rem 1rem;
+    .btn-outline-primary, .btn-outline-success {
+      border-radius: 25px;
+      padding: 0.5rem 1.5rem;
     }
     .badge {
-      font-weight: 500;
-      padding: 0.35em 0.65em;
-    }
-    .badge.bg-info {
-      background-color: #cff4fc !important;
-      color: #055160;
-    }
-    .badge.bg-success {
-      background-color: #d1e7dd !important;
-      color: #0f5132;
-    }
-    .list-group-item {
-      padding: 16px;
-      border-left: none;
-      border-right: none;
-    }
-    .list-group-item:first-child {
-      border-top: none;
-    }
-    .list-group-item:last-child {
-      border-bottom: none;
-    }
-    .authors {
-      color: #6c757d;
-      font-size: 0.9rem;
-    }
-    .display-4 {
-      color: #212529;
       font-weight: 600;
-    }
-    .lead {
-      color: #6c757d;
+      padding: 0.4em 0.75em;
     }
     .footer {
       padding: 20px 0;
+      background: #fff;
       color: #6c757d;
       font-size: 0.9rem;
       border-top: 1px solid #e9ecef;
@@ -90,24 +50,16 @@
 </head>
 <body>
   <div class="container-fluid">
-    <!-- Header Section -->
-    <div class="row py-5 bg-white">
-      <div class="col-md-8 offset-md-2 text-center">
-        <h1 class="display-4">Discover research</h1>
-        <p class="lead">Access over 160 million publication pages and stay up to date with what's happening in your field.</p>
-        
-        <!-- Search Bar -->
+    <div class="row py-5 bg-white text-center">
+      <div class="col-md-8 offset-md-2">
+        <h1 class="display-4">Discover Research</h1>
+        <p class="lead">Access millions of research publications and stay updated in your field.</p>
         <div class="search-container mt-4">
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search search-icon" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-              </svg>
+              <i class="bi bi-search"></i>
             </span>
-            <input 
-              type="text" 
-              class="form-control border-start-0" 
-              placeholder="Search publications">
+            <input type="text" class="form-control border-start-0" placeholder="Search publications">
           </div>
           <div class="mt-3">
             <button class="btn btn-outline-primary me-2">Publications</button>
@@ -117,89 +69,49 @@
         </div>
       </div>
     </div>
-  
-    <!-- Content Section -->
+
     <div class="row mt-4">
       <div class="col-md-8 offset-md-2">
-        <!-- Recent Publications -->
         <div class="card mb-4">
-          <div class="card-header bg-white">
-            <h5 class="mb-0">Latest Publications</h5>
-          </div>
+          <div class="card-header bg-white fw-bold">Latest Publications</div>
           <div class="card-body p-0">
-            <div class="list-group list-group-flush">
-              <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <span class="badge bg-info me-2">Preprint</span>
-                    <span class="text-muted small">Mar 2025</span>
-                    <h5 class="mt-2 mb-1">The Sovereign AI Genesis Project: Establishing the Foundational Principles of the Generative AI Universe</h5>
-                    <div class="authors">
-                      Anweesha Banerjee, ChatGPT (AI Language Model, OpenAI)
-                    </div>
-                  </div>
-                  <button class="btn btn-sm btn-outline-primary">View</button>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <div>
+                  <span class="badge bg-info">Preprint</span>
+                  <h5 class="mt-2">AI in Medical Research: Future Perspectives</h5>
+                  <p class="small text-muted">Dr. John Doe, March 2025</p>
                 </div>
-              </div>
-              <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <span class="badge bg-info me-2">Preprint</span>
-                    <span class="text-muted small">Mar 2025</span>
-                    <h5 class="mt-2 mb-1">The Sovereign AI Genesis Project: Empirical Validation of a Self-Generating AI Universe</h5>
-                    <div class="authors">
-                      Anweesha Banerjee, ChatGPT (AI Language Model, OpenAI)
-                    </div>
-                  </div>
-                  <button class="btn btn-sm btn-outline-primary">View</button>
-                </div>
-              </div>
-            </div>
+                <button class="btn btn-outline-primary btn-sm">View</button>
+              </li>
+            </ul>
           </div>
-          <div class="card-footer bg-white text-center">
+          <div class="card-footer text-center bg-white">
             <a href="#" class="btn btn-link">See more publications</a>
           </div>
         </div>
-  
-        <!-- Latest Events -->
+
         <div class="card">
-          <div class="card-header bg-white">
-            <h5 class="mb-0">Upcoming Events</h5>
-          </div>
+          <div class="card-header bg-white fw-bold">Upcoming Events</div>
           <div class="card-body p-0">
-            <div class="list-group list-group-flush">
-              <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <span class="badge bg-success me-2">Event</span>
-                    <span class="text-muted small">May 15, 2025</span>
-                    <h5 class="mt-2 mb-1">AI Research Symposium 2025</h5>
-                    <p class="mb-0 text-muted">Join leading researchers discussing the future of AI.</p>
-                  </div>
-                  <button class="btn btn-sm btn-outline-success">Join</button>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between">
+                <div>
+                  <span class="badge bg-success">Event</span>
+                  <h5 class="mt-2">AI Research Symposium 2025</h5>
+                  <p class="small text-muted">May 15, 2025</p>
                 </div>
-              </div>
-              <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div>
-                    <span class="badge bg-success me-2">Event</span>
-                    <span class="text-muted small">April 20, 2025</span>
-                    <h5 class="mt-2 mb-1">Engineering Innovation Workshop</h5>
-                    <p class="mb-0 text-muted">Practical workshop on implementing novel engineering concepts.</p>
-                  </div>
-                  <button class="btn btn-sm btn-outline-success">Join</button>
-                </div>
-              </div>
-            </div>
+                <button class="btn btn-outline-success btn-sm">Join</button>
+              </li>
+            </ul>
           </div>
-          <div class="card-footer bg-white text-center">
+          <div class="card-footer text-center bg-white">
             <a href="#" class="btn btn-link">View all events</a>
           </div>
         </div>
       </div>
     </div>
-    
-    <!-- Footer -->
+    <!--
     <div class="row mt-4">
       <div class="col-12 text-center footer">
         <span>© 2025 Research Platform</span>
@@ -208,10 +120,8 @@
         <a href="#">Privacy</a>
         <a href="#">Contact</a>
       </div>
-    </div>
+    </div>-->
   </div>
-
-  <!-- Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

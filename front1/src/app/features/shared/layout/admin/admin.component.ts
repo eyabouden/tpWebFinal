@@ -7,7 +7,8 @@ import { CommonModule, Location, LocationStrategy } from '@angular/common';
 import { ConfigurationComponent } from './configuration/configuration.component';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { NavigationComponent } from './navigation/navigation.component';
-import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component';
+
 
 @Component({
   selector: 'app-admin',

@@ -2,86 +2,54 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-6">
-        <div class="card mb-4 mx-4">
-          <div class="card-body p-4">
-            <h1>Register</h1>
-            <p class="text-medium-emphasis">Create your account</p>
+        <div class="card shadow-sm p-4">
+          <div class="card-body">
+            <h1 class="text-center">Register</h1>
+            <p class="text-muted text-center">Create your account</p>
             
             <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-              <div class="input-group mb-3">
-                <span class="input-group-text">
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-                <input 
-                  cFormControl 
-                  placeholder="First Name" 
-                  formControlName="firstName" 
-                  [ngClass]="{'is-invalid': registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)}"
-                />
+              
+              <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input id="firstName" class="form-control" formControlName="firstName" 
+                  [ngClass]="{'is-invalid': registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)}">
                 <div *ngIf="registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)" class="invalid-feedback">
-                  <div *ngIf="registerForm.get('firstName')?.errors?.['required']">First name is required</div>
+                  First name is required
                 </div>
               </div>
-              
-              <div class="input-group mb-3">
-                <span class="input-group-text">
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-                <input 
-                  cFormControl 
-                  placeholder="Last Name" 
-                  formControlName="lastName" 
-                  [ngClass]="{'is-invalid': registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)}"
-                />
+
+              <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input id="lastName" class="form-control" formControlName="lastName"
+                  [ngClass]="{'is-invalid': registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)}">
                 <div *ngIf="registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)" class="invalid-feedback">
-                  <div *ngIf="registerForm.get('lastName')?.errors?.['required']">Last name is required</div>
+                  Last name is required
                 </div>
               </div>
-              
-              <div class="input-group mb-3">
-                <span class="input-group-text">
-                  <svg cIcon name="cilEnvelopeOpen"></svg>
-                </span>
-                <input 
-                  cFormControl 
-                  placeholder="Email" 
-                  formControlName="email" 
-                  type="email"
-                  [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)}"
-                />
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" type="email" class="form-control" formControlName="email"
+                  [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)}">
                 <div *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)" class="invalid-feedback">
                   <div *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</div>
                   <div *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email address</div>
                 </div>
               </div>
-              
-              <div class="input-group mb-3">
-                <span class="input-group-text">
-                  <svg cIcon name="cilLockLocked"></svg>
-                </span>
-                <input 
-                  cFormControl 
-                  placeholder="Password" 
-                  formControlName="password" 
-                  type="password"
-                  [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)}"
-                />
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" type="password" class="form-control" formControlName="password"
+                  [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)}">
                 <div *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)" class="invalid-feedback">
-                  <div *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</div>
-                  </div>
+                  Password is required
+                </div>
               </div>
-              
-              <div class="input-group mb-4">
-                <span class="input-group-text">
-                  <svg cIcon name="cilLockLocked"></svg>
-                </span>
-                <input 
-                  cFormControl 
-                  placeholder="Confirm Password" 
-                  formControlName="confirmPassword" 
-                  type="password"
-                  [ngClass]="{'is-invalid': (registerForm.get('confirmPassword')?.invalid || registerForm.errors?.['mismatch']) && (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)}"
-                />
+
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input id="confirmPassword" type="password" class="form-control" formControlName="confirmPassword"
+                  [ngClass]="{'is-invalid': (registerForm.get('confirmPassword')?.invalid || registerForm.errors?.['mismatch']) && (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)}">
                 <div *ngIf="(registerForm.get('confirmPassword')?.invalid || registerForm.errors?.['mismatch']) && (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)" class="invalid-feedback">
                   <div *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Confirm password is required</div>
                   <div *ngIf="registerForm.errors?.['mismatch']">Passwords do not match</div>
@@ -91,18 +59,14 @@
               <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
               <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
               
-              <div class="row">
-                <div class="col-6">
-                  <button cButton color="primary" class="px-4" type="submit" [disabled]="registerForm.invalid || isLoading">
-                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                    Register
-                  </button>
-                </div>
-                <div class="col-6 text-right">
-                  <button cButton color="link" class="px-0" type="button" routerLink="/login">
-                    Already have an account?
-                  </button>
-                </div>
+              <div class="d-grid gap-2">
+                <button class="btn btn-primary" type="submit" [disabled]="registerForm.invalid || isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Register
+                </button>
+               
+                
+                <!--<a class="btn btn-outline-secondary" routerLink="/login">Already have an account?</a>-->
               </div>
             </form>
           </div>
