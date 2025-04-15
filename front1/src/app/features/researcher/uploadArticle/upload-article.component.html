@@ -1,0 +1,60 @@
+<div class="upload-article container my-5">
+    <h2 class="mb-4">Submit a New Article</h2>
+  
+    <form>
+      <!-- Title -->
+      <div class="form-group mb-3">
+        <label for="title">Title</label>
+        <input type="text" id="title" class="form-control" placeholder="Enter the article title">
+      </div>
+  
+      <!-- Authors -->
+      <div class="form-group mb-3">
+        <label for="authors">Authors</label>
+        <input type="text" id="authors" class="form-control" placeholder="e.g. John Doe, Jane Smith">
+      </div>
+  
+      <!-- Journal -->
+      <div class="form-group mb-3">
+        <label for="journal">Journal</label>
+        <input type="text" id="journal" class="form-control" placeholder="e.g. IEEE, Springer">
+      </div>
+  
+      <!-- DOI -->
+      <div class="form-group mb-3">
+        <label for="doi">DOI (optional)</label>
+        <input type="text" id="doi" class="form-control" placeholder="10.xxxx/abc123">
+      </div>
+  
+      <!-- Date -->
+      <div class="form-group mb-3">
+        <label for="publicationDate">Publication Date</label>
+        <input type="date" id="publicationDate" class="form-control">
+      </div>
+  
+      <!-- File Upload -->
+      <div class="form-group mb-3">
+        <label for="pdfUpload">Upload PDF</label>
+        <input type="file" id="pdfUpload" class="form-control" accept=".pdf">
+      </div>
+  
+      <!-- Status -->
+      <div class="form-group mb-4">
+        <label for="status">Status</label>
+        <select id="status" class="form-select">
+          <option value="" disabled selected>Select status</option>
+          <option value="submitted">Submitted</option>
+          <option value="under_review">Under Review</option>
+          <option value="published">Published</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+  
+      <!-- Buttons -->
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary me-2">Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+  
