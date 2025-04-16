@@ -116,7 +116,8 @@ public class Article {
     
     @Column(nullable = false, length = 2000)
     private String description;
-    
+    @Column(nullable = false)
+    private String status = "PENDING"; 
     
 
     @ManyToOne
@@ -136,8 +137,8 @@ public class Article {
     @JsonBackReference
     private Domain domain;
     
-    // The actual file
-    @OneToOne(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private File file;
+    @Column(name = "file_path")
+private String filePath;
+
+    
 }

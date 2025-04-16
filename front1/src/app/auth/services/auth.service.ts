@@ -53,7 +53,10 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
-
+  getUserId(): number | null {
+    return this.getCurrentUser()?.id || null;
+  }
+  
   private storeUser(user: LoginResponse): void {
     localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem(this.tokenKey, user.token);  // Store token separately

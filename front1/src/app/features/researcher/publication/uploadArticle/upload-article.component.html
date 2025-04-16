@@ -1,0 +1,109 @@
+<div class="upload-article container my-5">
+  <h2 class="mb-4">Submit a New Article</h2>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+    <!-- Title -->
+    <div class="form-group mb-3">
+      <label for="titre">Title*</label>
+      <input 
+        type="text" 
+        id="titre" 
+        formControlName="titre" 
+        class="form-control" 
+        placeholder="Enter the article title"
+        [ngClass]="{'is-invalid': articleForm.get('titre')?.invalid && articleForm.get('titre')?.touched}">
+      <div class="invalid-feedback" *ngIf="articleForm.get('titre')?.invalid && articleForm.get('titre')?.touched">
+        Title is required.
+      </div>
+    </div>
+
+    <!-- DOI -->
+    <div class="form-group mb-3">
+      <label for="doi">DOI*</label>
+      <input 
+        type="text" 
+        id="doi" 
+        formControlName="doi" 
+        class="form-control" 
+        placeholder="10.xxxx/abc123"
+        [ngClass]="{'is-invalid': articleForm.get('doi')?.invalid && articleForm.get('doi')?.touched}">
+      <div class="invalid-feedback" *ngIf="articleForm.get('doi')?.invalid && articleForm.get('doi')?.touched">
+        DOI is required.
+      </div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="form-group mb-3">
+      <label for="keyword">Keywords*</label>
+      <input 
+        type="text" 
+        id="keyword" 
+        formControlName="keyword" 
+        class="form-control" 
+        placeholder="e.g. machine learning, artificial intelligence, data science"
+        [ngClass]="{'is-invalid': articleForm.get('keyword')?.invalid && articleForm.get('keyword')?.touched}">
+      <div class="invalid-feedback" *ngIf="articleForm.get('keyword')?.invalid && articleForm.get('keyword')?.touched">
+        Keywords are required.
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="form-group mb-3">
+      <label for="description">Description*</label>
+      <textarea 
+        id="description" 
+        formControlName="description" 
+        class="form-control" 
+        rows="5" 
+        placeholder="Enter a detailed description of your article"
+        [ngClass]="{'is-invalid': articleForm.get('description')?.invalid && articleForm.get('description')?.touched}">
+      </textarea>
+      <div class="invalid-feedback" *ngIf="articleForm.get('description')?.invalid && articleForm.get('description')?.touched">
+        <span *ngIf="articleForm.get('description')?.errors?.['required']">Description is required.</span>
+        <span *ngIf="articleForm.get('description')?.errors?.['maxlength']">Description cannot exceed 2000 characters.</span>
+      </div>
+      <small class="text-muted">Maximum 2000 characters</small>
+    </div>
+
+    <!-- Domain (optional) -->
+    <div class="form-group mb-3">
+      <label for="domainId">Research Domain (optional)</label>
+      <select 
+        id="domainId" 
+        formControlName="domainId" 
+        class="form-select">
+        <option value="" disabled selected>Select domain</option>
+        <!-- You would populate this from your domain service -->
+        <option value="1">Computer Science</option>
+        <option value="2">Biology</option>
+        <option value="3">Physics</option>
+        <!-- Add more domains as needed -->
+      </select>
+    </div>
+
+    <!-- File Upload -->
+    <div class="form-group mb-4">
+      <label for="pdfUpload">Upload PDF</label>
+      <input 
+        type="file" 
+        id="pdfUpload" 
+        class="form-control" 
+        accept=".pdf,.doc,.docx"
+        (change)="onFileSelected($event)">
+      <small class="text-muted">Upload the full article in PDF or document format</small>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex justify-content-end">
+      <button type="button" class="btn btn-secondary me-2" (click)="cancel()" [disabled]="isSubmitting">Cancel</button>
+      <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || articleForm.invalid">
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+        Submit
+      </button>
+    </div>
+  </form>
+</div>

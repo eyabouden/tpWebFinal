@@ -11,7 +11,7 @@ import { HomeComponent } from './features/home/home.component';
 import { UsersComponent } from './features/admin/users/users.component';
 import { EventComponent } from './features/admin/event/event.component';
 import { EventDetailComponent } from './features/admin/event/event-detail/event-detail.component';
-import { PublicationComponent } from './features/admin/publications/publication.component';
+
 import { ResearchersComponent } from './features/admin/researchers/researchers-management.component';
 import { ResearcherLayoutComponent } from './layouts/researcher-layout/researcher-layout.component';
 import { ResearcherDashboardComponent } from './features/researcher/dashboard/researcher-dashboard.component';
@@ -58,7 +58,14 @@ export const appRoutes: Routes = [
       {
         path: 'publications',
         loadComponent: () =>
-          import('./features/researcher/publication/publication.component').then(m => m.PublicationsComponent)
+          import('./features/researcher/publication/publication.component').then(m => m.PublicationsComponent),
+        children:[
+          {
+            path: 'submit',
+            loadComponent: () =>
+              import('./features/researcher/publication/uploadArticle/upload-article.component').then(m => m.UploadArticleComponent)
+          },
+        ]
       },
       {
         path: 'profile',
@@ -66,10 +73,6 @@ export const appRoutes: Routes = [
           import('./features/researcher/profile/profile.component').then(m => m.ProfileComponent)
       },
       {
-        path: 'submit',
-        loadComponent: () =>
-          import('./features/researcher/uploadArticle/upload-article.component').then(m => m.UploadArticleComponent)
-      },{
         path: 'bookmarks',
         loadComponent: () =>
           import('./features/researcher/bookmark/bookmark.component').then(m => m.BookmarkComponent)
@@ -86,7 +89,7 @@ export const appRoutes: Routes = [
   { path: 'dashboard/event/detail', component: EventDetailComponent },
   { path: 'dashboard/admin/users', component: ResearchersComponent },
   { path: 'dashboard/admin/searcher', component: ResearchersComponent },
-  { path: 'dashboard/admin/searcher/publication', component: PublicationComponent },
+  //{ path: 'dashboard/admin/searcher/publication', component: PublicationComponent },
   { path: 'dashboard/utilisateur', component: UtilisateurDashboardComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];

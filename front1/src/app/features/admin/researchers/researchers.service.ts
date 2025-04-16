@@ -47,8 +47,17 @@ export class UserService {
     return this.http.put<User>(`${this.apiUrl}/${id}`, userData, { headers: this.getAuthHeaders() });
   }
 
-  deleteUser(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
+  deleteUser(id: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete<any>(`${this.apiUrl}/${id}`, { 
+      headers: headers,
+      observe: 'response' 
+    }).pipe(
+      map(response => {
+        console.log('Delete response:', response);
+        return response.body; 
+      })
+    );
   }
 
   changeUserRole(id: number, newRole: string): Observable<User> {

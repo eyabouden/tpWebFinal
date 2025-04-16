@@ -150,10 +150,11 @@ export class ResearchersComponent implements OnInit {
   saveUser(): void {
     if (!this.editingUserId) return;
     
+    const userId = this.editingUserId; // Store ID in local variable
     this.loading = true;
     
     // Check if role has changed
-    const originalUser = this.users.find(u => u.id === this.editingUserId);
+    const originalUser = this.users.find(u => u.id === userId);
     const roleChanged = originalUser && originalUser.role !== this.editForm.role;
     const newRole = this.editForm.role;
     
@@ -162,27 +163,25 @@ export class ResearchersComponent implements OnInit {
     
     // If switching to UTILISATEUR, remove moderator-specific fields
     if (newRole === 'UTILISATEUR') {
-      // Remove moderator-specific fields if changing to regular user
       userData.institution = null;
       userData.grade = null;
       userData.employmentDate = null;
-      // Add any other moderator-specific fields that should be cleared
     }
     
     // If changing role, handle it first
     if (roleChanged) {
-      this.userService.changeUserRole(this.editingUserId, newRole)
+      this.userService.changeUserRole(userId, newRole)
         .subscribe({
           next: () => {
             // Then update user data with role-appropriate fields
-            this.userService.updateUser(this.editingUserId!, userData)
+            this.userService.updateUser(userId, userData)
               .subscribe({
                 next: (updatedUser) => {
                   // Manually set the role since it might not be returned
                   updatedUser.role = newRole;
                   
-                  // Update user in the list
-                  const index = this.users.findIndex(u => u.id === this.editingUserId);
+                  // Update user in the list with correct ID
+                  const index = this.users.findIndex(u => u.id === userId);
                   if (index !== -1) {
                     this.users[index] = updatedUser;
                   }
@@ -191,17 +190,8 @@ export class ResearchersComponent implements OnInit {
                   this.editForm = {};
                   this.loading = false;
                   
-                  // If role changed, user will no longer be in this view
-                  if (roleChanged && newRole !== this.roleFilter) {
-                    // Remove the user from current view since they no longer match the filter
-                    this.users = this.users.filter(u => u.id !== this.editingUserId);
-                    
-                    // Notify user about the change
-                    alert(`User role changed to ${newRole}. This user will now appear in the ${newRole === 'MODERATEUR' ? 'Chercheurs' : 'Utilisateurs'} list.` );
-                  } else {
-                    // Just reload the current view
-                    this.loadUsers();
-                  }
+                  // Reload users to ensure we have the latest data
+                  this.loadUsers();
                 },
                 error: (err) => {
                   console.error('Error updating user data after role change:', err);
@@ -218,11 +208,11 @@ export class ResearchersComponent implements OnInit {
         });
     } else {
       // No role change, just update user data
-      this.userService.updateUser(this.editingUserId, userData)
+      this.userService.updateUser(userId, userData)
         .subscribe({
           next: (updatedUser) => {
             // Update user in the list
-            const index = this.users.findIndex(u => u.id === this.editingUserId);
+            const index = this.users.findIndex(u => u.id === userId);
             if (index !== -1) {
               this.users[index] = updatedUser;
             }
@@ -242,13 +232,18 @@ export class ResearchersComponent implements OnInit {
   
   deleteUser(id: number): void {
     if (confirm('Are you sure you want to delete this user?')) {
+      // Print the ID to console for debugging
+      console.log('Attempting to delete user with ID:', id);
+      
       this.userService.deleteUser(id)
         .subscribe({
           next: () => {
+            console.log('Delete successful for ID:', id);
+            // Remove user from the array
             this.users = this.users.filter(user => user.id !== id);
           },
           error: (err) => {
-            console.error('Error deleting user:', err);
+            console.error(`Error deleting user with ID ${id}:`, err);
             alert('Failed to delete user. Please try again.');
           }
         });
