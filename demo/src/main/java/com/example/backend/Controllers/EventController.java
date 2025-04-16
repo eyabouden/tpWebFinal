@@ -1,21 +1,28 @@
 package com.example.backend.Controllers;
 
 import com.example.backend.Dto.CreateEventDTO;
+import com.example.backend.Dto.EventParticipantDTO;
 import com.example.backend.Dto.UpdateEventDTO;
 import com.example.backend.Entities.Event;
+import com.example.backend.Entities.User;
 import com.example.backend.Services.EventService;
+
+import com.example.backend.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private EventService eventService;
     
@@ -34,14 +41,20 @@ public class EventController {
     }
     
       // Create a new event (admin or moderator only)
-      @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATEUR')")
-      @PostMapping
-      public ResponseEntity<Event> createEvent(
-              @RequestBody CreateEventDTO eventDTO,
-              @RequestAttribute("userId") Long userId) {
-          Event createdEvent = eventService.createEvent(eventDTO, userId);
-          return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
-      }
+      //@PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATEUR')")
+    @PostMapping
+public ResponseEntity<Event> createEvent(@RequestBody CreateEventDTO eventDTO) {
+    // Get user email from Spring Security context
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName(); // This gets the username (email in your case)
+    
+    // Find the user by email
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    
+    Event createdEvent = eventService.createEvent(eventDTO, user.getId());
+    return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
+}
 
       
     
@@ -64,22 +77,23 @@ public class EventController {
     }
     
     // Register a user for an event
-    @PostMapping("/{eventId}/register/{userId}")
-    public ResponseEntity<Event> registerUserForEvent(
-            @PathVariable Long eventId,
-            @PathVariable Long userId) {
-        Event updatedEvent = eventService.registerUserForEvent(eventId, userId);
-        return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
-    }
-    
-    // Unregister a user from an event
-    @DeleteMapping("/{eventId}/unregister/{userId}")
-    public ResponseEntity<Event> unregisterUserFromEvent(
-            @PathVariable Long eventId,
-            @PathVariable Long userId) {
-        Event updatedEvent = eventService.unregisterUserFromEvent(eventId, userId);
-        return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
-    }
+@PostMapping("/{eventId}/register/{userId}")
+public ResponseEntity<EventParticipantDTO> registerUserForEvent(
+        @PathVariable Long eventId,
+        @PathVariable Long userId) {
+    Event updatedEvent = eventService.registerUserForEvent(eventId, userId);
+    EventParticipantDTO dto = EventParticipantDTO.fromEvent(updatedEvent);
+    return new ResponseEntity<>(dto, HttpStatus.OK);
+}
+
+@DeleteMapping("/{eventId}/unregister/{userId}")
+public ResponseEntity<EventParticipantDTO> unregisterUserFromEvent(
+        @PathVariable Long eventId,
+        @PathVariable Long userId) {
+    Event updatedEvent = eventService.unregisterUserFromEvent(eventId, userId);
+    EventParticipantDTO dto = EventParticipantDTO.fromEvent(updatedEvent);
+    return new ResponseEntity<>(dto, HttpStatus.OK);
+}
     
     // Get upcoming events
     @GetMapping("/upcoming")

@@ -341,52 +341,51 @@ export class EventComponent implements OnInit {
   }
 
   openCreateEventModal(): void {
-    this.router.navigate(['/dashboard/admin/evenements/create']);
+    this.router.navigate(['dashboard/admin/evenements/create']);
   }
-
+  
   editEvent(event: Event): void {
     this.router.navigate([`/dashboard/admin/evenements/edit/${event.id}`]);
   }
-
   
+  viewEvent(event: Event): void {
+    this.router.navigate([`/dashboard/admin/evenements/view/${event.id}`]);
+  }
 
  
 
-
   removeParticipant(participant: User): void {
     if (!this.selectedEvent) return;
-    
-    this.eventService.unregisterParticipant(this.selectedEvent.id, participant.id).subscribe({
-      next: (updatedEvent: Event) => {
-        // Update the event in arrays
-        const eventIndex = this.events.findIndex(e => e.id === this.selectedEvent!.id);
-        if (eventIndex !== -1) {
-          this.events[eventIndex] = updatedEvent;
-        }
-        
-        const filteredIndex = this.filteredEvents.findIndex(e => e.id === this.selectedEvent!.id);
-        if (filteredIndex !== -1) {
-          this.filteredEvents[filteredIndex] = updatedEvent;
-        }
-        
-        // Update selected event
-        this.selectedEvent = updatedEvent;
-        
-        this.showNotification('success', `Participant ${participant.firstName} ${participant.lastName} retiré avec succès.`);
-      },
-      error: (error) => {
-        console.error('Error removing participant:', error);
-        // For demonstration, remove participant from UI
-        if (this.selectedEvent && this.selectedEvent.participants) {
-          const participantIndex = this.selectedEvent.participants.findIndex(p => p.id === participant.id);
-          if (participantIndex !== -1) {
-            this.selectedEvent.participants.splice(participantIndex, 1);
+  
+    this.eventService.unregisterParticipant(this.selectedEvent.id, participant.id)
+      .subscribe({
+        next: (updatedEvent: Event) => {
+          this.updateEventLists(updatedEvent);
+          this.showNotification('success', `${participant.firstName} retiré avec succès.`);
+        },
+        error: (error) => {
+          console.error('Erreur lors du retrait:', error);
+          // Optional fallback
+          if (this.selectedEvent && this.selectedEvent.participants) {
+            this.selectedEvent.participants = this.selectedEvent.participants.filter(p => p.id !== participant.id);
             this.showNotification('info', `Participant retiré localement.`);
           }
         }
-      }
-    });
+      });
   }
+  
+  // Helper
+  private updateEventLists(updatedEvent: Event): void {
+    const updateList = (list: Event[]) => {
+      const idx = list.findIndex(e => e.id === updatedEvent.id);
+      if (idx !== -1) list[idx] = updatedEvent;
+    };
+  
+    updateList(this.events);
+    updateList(this.filteredEvents);
+    this.selectedEvent = updatedEvent;
+  }
+  
 
 
 
@@ -549,28 +548,45 @@ export class EventComponent implements OnInit {
     return this.selectedEvent.participants.some(p => p.id === user.id);
   }
 
-  addParticipant(user: User): void {
-    if (!this.selectedEvent) {
-      console.error("No event selected");
-      return;
-    }
+  // addParticipant(user: User): void {
+  //   if (!this.selectedEvent) {
+  //     console.error("No event selected");
+  //     return;
+  //   }
     
+  //   this.eventService.addParticipant(this.selectedEvent.id, user.id)
+  //     .subscribe({
+  //       next: (updatedEvent) => {
+  //         // Update the event in your list
+  //         const index = this.events.findIndex(e => e.id === updatedEvent.id);
+  //         if (index !== -1) {
+  //           this.events[index] = updatedEvent;
+  //         }
+  //         this.selectedEvent = updatedEvent;
+  //         this.showAddParticipantForm = false;
+  //       },
+  //       error: (error) => {
+  //         console.error('Error adding participant:', error);
+  //       }
+  //     });
+  // }
+  addParticipant(user: User): void {
+    if (!this.selectedEvent) return;
+  
     this.eventService.addParticipant(this.selectedEvent.id, user.id)
       .subscribe({
-        next: (updatedEvent) => {
-          // Update the event in your list
-          const index = this.events.findIndex(e => e.id === updatedEvent.id);
-          if (index !== -1) {
-            this.events[index] = updatedEvent;
-          }
-          this.selectedEvent = updatedEvent;
+        next: (updatedEvent: Event) => {
+          this.updateEventLists(updatedEvent);
+          this.showNotification('success', `${user.firstName} ajouté avec succès.`);
           this.showAddParticipantForm = false;
         },
         error: (error) => {
-          console.error('Error adding participant:', error);
+          console.error('Erreur lors de l’ajout du participant:', error);
+          this.showNotification('error', `Impossible d’ajouter ${user.firstName}.`);
         }
       });
   }
+  
 
   confirmRemoveParticipant(participant: User): void {
     this.selectedParticipant = participant;

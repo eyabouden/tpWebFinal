@@ -14,9 +14,10 @@ public class UserUpdateRequest {
     private String lastName; // Ensure this field is present
     private String email; // Ensure this field is present
     private String password; // Ensure this field is present
-    private Date employmentDate; // Ensure this field is present
-    private String originalEstablishment; 
-    private String lastDiploma; 
-    private String grade; 
+    private String institution;
+    private String position;
+    private String department;
+    private Date employmentDate;
+    private String grade;
     private Role role; 
 }

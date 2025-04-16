@@ -1,13 +1,13 @@
 package com.example.backend.Repositories;
 
-import com.example.backend.Entities.Event;
-import com.example.backend.Entities.User;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.List;
+import com.example.backend.Entities.Event;
+import com.example.backend.Entities.User;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -16,4 +16,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByCreatedById(Long userId);
     List<Event> findByParticipantsContaining(User participant);
     List<Event> findByStatus(String status);
+    
 }

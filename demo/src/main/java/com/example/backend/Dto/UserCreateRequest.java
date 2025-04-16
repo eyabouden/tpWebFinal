@@ -2,8 +2,6 @@ package com.example.backend.Dto;
 
 import java.util.Date;
 
-import com.example.backend.Enum.Role;
-
 import lombok.Getter;
 import lombok.Setter;
 

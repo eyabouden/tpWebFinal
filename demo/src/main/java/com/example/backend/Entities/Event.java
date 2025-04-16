@@ -48,7 +48,7 @@ public class Event {
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonIgnoreProperties("participatingEvents")  
+    @JsonIgnoreProperties("participatingEvents")  // This breaks the circular reference
     private List<User> participants;
     
     // Status: UPCOMING, ONGOING, COMPLETED, CANCELLED

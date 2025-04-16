@@ -88,122 +88,191 @@
     </c-header>
 
     <!-- Page Content -->
-    <div class="page-content">
-      <!-- Dashboard Overview -->
-      <div class="dashboard-container">
-        <!-- Page Title -->
-        <div class="page-title mb-4">
-          <h1>Chercheurs </h1>
-          <c-breadcrumb>
-            <c-breadcrumb-item>Dashboard/</c-breadcrumb-item>
-            <c-breadcrumb-item active>Chercheurs</c-breadcrumb-item>
-          </c-breadcrumb>
+    <div class="container-lg">
+      <div class="card mb-4">
+        <div class="card-header">
+          <strong>{{ pageTitle }}</strong>
         </div>
-
-        <!-- Users Table Card -->
-        <div class="row">
-          <div class="col-xl-12">
-            <app-card cardTitle="Users" [options]="false" blockClass="table-border-style">
-              <div *ngIf="loading" class="text-center py-5">
-                <c-spinner></c-spinner>
-              </div>
-
-              <div *ngIf="error" class="alert alert-danger">
-                {{ error }}
-              </div>
-
-              <div class="table-responsive" *ngIf="!loading && !error">
-                <table class="table table-hover table-striped">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
-                      <th>Employment Date</th>
-                      <th>Establishment</th>
-                      <th>Last Diploma</th>
-                      <th>Grade</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let user of users">
-                      <td>{{ user.id }}</td>
+        <div class="card-body">
+          <!-- Loading spinner -->
+          <div *ngIf="loading" class="text-center my-5">
+            <c-spinner color="primary"></c-spinner>
+            <p class="mt-3">Loading users...</p>
+          </div>
+    
+          <!-- Error message -->
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+    
+          <!-- Users table -->
+          <div *ngIf="!loading && !error && users.length">
+            <table cTable striped hover>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <!-- Show moderator-specific fields only when viewing moderators -->
+                  <ng-container *ngIf="roleFilter === 'MODERATEUR'">
+                    <th>Employment Date</th>
+                    <th>Institution</th>
+                    <th>Grade</th>
+                  </ng-container>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let user of users; let i = index">
+                  <tr>
+                    <!-- View Mode -->
+                    <ng-container *ngIf="!isEditing(user.id)">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ user.firstName }} {{ user.lastName }}</td>
+                      <td>{{ user.email }}</td>
+                      <!-- Moderator-specific fields -->
+                      <ng-container *ngIf="roleFilter === 'MODERATEUR'">
+                        <td>{{ formatDate(user.employmentDate) }}</td>
+                        <td>{{ user.institution }}</td>
+                        <td>{{ user.grade }}</td>
+                      </ng-container>
                       <td>
-                        <span *ngIf="!isEditing(user.id)">{{ user.firstName }} {{ user.lastName }}</span>
-                        <div *ngIf="isEditing(user.id)" class="d-flex gap-2">
-                          <input cFormControl type="text" [(ngModel)]="editForm.firstName" placeholder="First name" class="form-control form-control-sm">
-                          <input cFormControl type="text" [(ngModel)]="editForm.lastName" placeholder="Last name" class="form-control form-control-sm">
+                        <c-badge [color]="getRoleBadgeClass(user.role)">
+                          {{ user.role }}
+                        </c-badge>
+                      </td>
+                      <td>
+                        <button cButton color="primary" size="sm" variant="ghost" (click)="viewUser(user)" class="me-1">
+                          <svg cIcon name="cilUser"></svg>
+                        </button>
+                        <button cButton color="info" size="sm" variant="ghost" (click)="editUser(user)" class="me-1">
+                          <svg cIcon name="cilPencil"></svg>
+                        </button>
+                        <button cButton color="danger" size="sm" variant="ghost" (click)="deleteUser(user.id)">
+                          <svg cIcon name="cilTrash"></svg>
+                        </button>
+                      </td>
+                    </ng-container>
+    
+                    <!-- Edit Mode -->
+                    <ng-container *ngIf="isEditing(user.id)">
+                      <td>{{ i + 1 }}</td>
+                      <td>
+                        <div class="row g-1">
+                          <div class="col-6">
+                            <input class="form-control form-control-sm" [(ngModel)]="editForm.firstName" placeholder="First Name">
+                          </div>
+                          <div class="col-6">
+                            <input class="form-control form-control-sm" [(ngModel)]="editForm.lastName" placeholder="Last Name">
+                          </div>
                         </div>
                       </td>
                       <td>
-                        <span *ngIf="!isEditing(user.id)">{{ user.email }}</span>
-                        <input *ngIf="isEditing(user.id)" cFormControl type="email" [(ngModel)]="editForm.email" class="form-control form-control-sm">
+                        <input class="form-control form-control-sm" [(ngModel)]="editForm.email" placeholder="Email">
                       </td>
+                      
+                      <!-- Moderator-specific fields in edit mode - always shown when editing MODERATEUR or switching to MODERATEUR -->
+                      <ng-container *ngIf="roleFilter === 'MODERATEUR' || editForm.role === 'MODERATEUR'">
+                        <td>
+                          <input class="form-control form-control-sm" type="date" [(ngModel)]="editForm.employmentDate">
+                        </td>
+                        <td>
+                          <input class="form-control form-control-sm" [(ngModel)]="editForm.institution" placeholder="Institution">
+                        </td>
+                        <td>
+                          <input class="form-control form-control-sm" [(ngModel)]="editForm.grade" placeholder="Grade">
+                        </td>
+                      </ng-container>
+                      
+                      <!-- Empty cells for non-moderators if we're on the moderator view -->
+                      <ng-container *ngIf="roleFilter === 'MODERATEUR' && editForm.role === 'UTILISATEUR'">
+                        <td colspan="3" class="text-muted text-center font-italic">
+                          Regular user (no moderator data needed)
+                        </td>
+                      </ng-container>
+                      
                       <td>
-                        <c-badge *ngIf="!isEditing(user.id)" [color]="user.role === 'ADMIN' ? 'danger' : 'info'">
-                          {{ user.role }}
-                        </c-badge>
-                        <select *ngIf="isEditing(user.id)" [(ngModel)]="editForm.role" class="form-select form-select-sm">
-                          
-                          <option value="MODERATOR">Moderator</option>
+                        <select class="form-select form-select-sm" [(ngModel)]="editForm.role">
+                          <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
                         </select>
                       </td>
                       <td>
-                        <span *ngIf="!isEditing(user.id)">{{ formatDate(user.employmentDate) }}</span>
-                        <input *ngIf="isEditing(user.id)" cFormControl type="date" [(ngModel)]="editForm.employmentDate" class="form-control form-control-sm">
+                        <button cButton color="success" size="sm" variant="ghost" (click)="saveUser()" class="me-1">
+                          <svg cIcon name="cilCheck"></svg>
+                        </button>
+                        <button cButton color="danger" size="sm" variant="ghost" (click)="cancelEdit()">
+                          <svg cIcon name="cilX"></svg>
+                        </button>
                       </td>
-                      <td>
-                        <span *ngIf="!isEditing(user.id)">{{ user.originalEstablishment }}</span>
-                        <input *ngIf="isEditing(user.id)" cFormControl type="text" [(ngModel)]="editForm.departement" class="form-control form-control-sm">
-                      </td>
-                      <td>
-                        <span *ngIf="!isEditing(user.id)">{{ user.lastDiploma }}</span>
-                        <input *ngIf="isEditing(user.id)" cFormControl type="text" [(ngModel)]="editForm.lastDiploma" class="form-control form-control-sm">
-                      </td>
-                      <td>
-                        <span *ngIf="!isEditing(user.id)">{{ user.grade }}</span>
-                        <input *ngIf="isEditing(user.id)" cFormControl type="text" [(ngModel)]="editForm.grade" class="form-control form-control-sm">
-                      </td>
-                      <td>
-                        <div class="action-buttons">
-                          <!-- View Button -->
-                          <button cButton color="info" size="sm" title="View user details" (click)="viewUser(user)">
-                            <i class="bi bi-eye"></i>
-                          </button>
-                          
-                          <!-- Edit/Save Buttons -->
-                          <button *ngIf="!isEditing(user.id)" cButton color="primary" size="sm" title="Edit user" (click)="editUser(user)">
-                            <i class="bi bi-pencil"></i>
-                          </button>
-                          <button *ngIf="isEditing(user.id)" cButton color="success" size="sm" title="Save changes" (click)="saveUser()">
-                            <i class="bi bi-check-lg"></i>
-                          </button>
-                          
-                          <!-- Cancel Button (only when editing) -->
-                          <button *ngIf="isEditing(user.id)" cButton color="secondary" size="sm" title="Cancel editing" (click)="cancelEdit()">
-                            <i class="bi bi-x-lg"></i>
-                          </button>
-                          
-                          <!-- Delete Button -->
-                          <button cButton color="danger" size="sm" title="Delete user" (click)="deleteUser(user.id)">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div *ngIf="!loading && !error && users.length === 0" class="text-center py-5">
-                No users found.
-              </div>
-            </app-card>
+                    </ng-container>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+    
+          <!-- No users message -->
+          <div *ngIf="!loading && !error && !users.length" class="text-center my-5">
+            <p>No users found matching the filter criteria.</p>
           </div>
         </div>
       </div>
+    
+      <!-- User Details Modal -->
+      <div *ngIf="showUserDetails && selectedUser" class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">User Details</h5>
+              <button type="button" class="btn-close" (click)="showUserDetails = false"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row mb-2">
+                <div class="col-4 fw-bold">Name:</div>
+                <div class="col-8">{{ selectedUser.firstName }} {{ selectedUser.lastName }}</div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-4 fw-bold">Email:</div>
+                <div class="col-8">{{ selectedUser.email }}</div>
+              </div>
+              
+              <!-- Show moderator-specific fields in user details only if they exist -->
+              <div class="row mb-2" *ngIf="selectedUser.employmentDate">
+                <div class="col-4 fw-bold">Employment Date:</div>
+                <div class="col-8">{{ formatDate(selectedUser.employmentDate) }}</div>
+              </div>
+              <div class="row mb-2" *ngIf="selectedUser.institution">
+                <div class="col-4 fw-bold">Institution:</div>
+                <div class="col-8">{{ selectedUser.institution }}</div>
+              </div>
+              <div class="row mb-2" *ngIf="selectedUser.grade">
+                <div class="col-4 fw-bold">Grade:</div>
+                <div class="col-8">{{ selectedUser.grade }}</div>
+              </div>
+              
+              <div class="row mb-2">
+                <div class="col-4 fw-bold">Role:</div>
+                <div class="col-8">
+                  <c-badge [color]="getRoleBadgeClass(selectedUser.role)">
+                    {{ selectedUser.role }}
+                  </c-badge>
+                </div>
+              </div>
+              <div class="row mb-2" *ngIf="selectedUser.department">
+                <div class="col-4 fw-bold">Department:</div>
+                <div class="col-8">{{ selectedUser.department }}</div>
+              </div>
+              <div class="row mb-2" *ngIf="selectedUser.position">
+                <div class="col-4 fw-bold">Position:</div>
+                <div class="col-8">{{ selectedUser.position }}</div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="showUserDetails = false">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="showUserDetails" class="modal-backdrop fade show"></div>
     </div>
-  </div>
-</div>

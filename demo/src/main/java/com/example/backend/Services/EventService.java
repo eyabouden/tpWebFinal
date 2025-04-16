@@ -1,17 +1,18 @@
 package com.example.backend.Services;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.backend.Dto.CreateEventDTO;
 import com.example.backend.Dto.UpdateEventDTO;
 import com.example.backend.Entities.Event;
 import com.example.backend.Entities.User;
 import com.example.backend.Repositories.EventRepository;
 import com.example.backend.Repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class EventService {
@@ -23,8 +24,20 @@ public class EventService {
     private UserRepository userRepository;
     
     public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+        List<Event> events = eventRepository.findAll();
+        Date now = new Date();
+    
+        for (Event event : events) {
+            String updatedStatus = determineEventStatus(event.getStartDate(), event.getEndDate());
+            if (!updatedStatus.equals(event.getStatus())) {
+                event.setStatus(updatedStatus);
+                eventRepository.save(event);
+            }
+        }
+    
+        return events;
     }
+    
     
     public Event getEventById(Long id) {
         return eventRepository.findById(id)
@@ -44,7 +57,8 @@ public class EventService {
         event.setLocation(dto.getLocation());
         event.setEventType(dto.getEventType());
         event.setCreatedBy(user);
-        event.setStatus("UPCOMING");
+        event.setStatus(determineEventStatus(dto.getStartDate(), dto.getEndDate()));
+
         
         return eventRepository.save(event);
     }
@@ -60,35 +74,40 @@ public class EventService {
         if (dto.getLocation() != null) event.setLocation(dto.getLocation());
         if (dto.getEventType() != null) event.setEventType(dto.getEventType());
         
-        if (dto.getStatus() != null) event.setStatus(dto.getStatus());
+        event.setStatus(determineEventStatus(dto.getStartDate(), dto.getEndDate()));
+
         
         return eventRepository.save(event);
     }
     
     @Transactional
-    public Event registerUserForEvent(Long eventId, Long userId) {
-        Event event = getEventById(eventId);
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + userId));
-            
-        if (!event.getParticipants().contains(user)) {
-            event.getParticipants().add(user);
-            return eventRepository.save(event);
-        }
-        
-        return event;
+public Event registerUserForEvent(Long eventId, Long userId) {
+    Event event = getEventById(eventId);
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + userId));
+
+    if (!event.getParticipants().contains(user)) {
+        event.getParticipants().add(user);
+        return eventRepository.save(event);
     }
-    
-    @Transactional
-    public Event unregisterUserFromEvent(Long eventId, Long userId) {
-        Event event = getEventById(eventId);
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + userId));
-            
+
+    return event; // Already registered
+}
+
+@Transactional
+public Event unregisterUserFromEvent(Long eventId, Long userId) {
+    Event event = getEventById(eventId);
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + userId));
+
+    if (event.getParticipants().contains(user)) {
         event.getParticipants().remove(user);
         return eventRepository.save(event);
     }
-    
+
+    return event; // Already not in the list
+}
+
     public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
     }
@@ -104,5 +123,15 @@ public class EventService {
     public List<Event> getEventsByOrganizer(Long userId) {
         return eventRepository.findByCreatedById(userId);
     }
-    
+    private String determineEventStatus(Date startDate, Date endDate) {
+        Date now = new Date();
+        if (now.before(startDate)) {
+            return "UPCOMING";
+        } else if (!now.after(endDate)) {
+            return "ONGOING";
+        } else {
+            return "COMPLETED";
+        }
+    }
+      
 }

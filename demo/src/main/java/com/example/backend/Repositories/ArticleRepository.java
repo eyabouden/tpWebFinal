@@ -18,7 +18,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     
     List<Object[]> countArticlesByDomain();
 
-
+    Long countByUserId(Long userId);
 
     List<Article> findByKeywordContaining(String keyword); // Custom method
     Optional<Article> findByDoi(String doi); // Custom method

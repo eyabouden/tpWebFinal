@@ -128,10 +128,9 @@ import com.example.backend.Dto.LoginRequest;
 import com.example.backend.Dto.LoginResponse;
 import com.example.backend.Dto.RegisterRequest;
 import com.example.backend.Entities.User;
-
+import com.example.backend.Enum.Role;
 import com.example.backend.Services.UserService;
 import com.example.backend.security.JwtService;
-import com.example.backend.Enum.Role;
 
 @RestController
 @RequestMapping("/api/auth")

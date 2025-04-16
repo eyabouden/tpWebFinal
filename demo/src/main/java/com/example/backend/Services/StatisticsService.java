@@ -198,23 +198,25 @@
 //     // }
 // }
 package com.example.backend.Services;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.backend.Entities.Article;
-import com.example.backend.Entities.Domain;
-import com.example.backend.Entities.Event;
 import com.example.backend.Entities.Statistics;
 import com.example.backend.Entities.User;
+import com.example.backend.Enum.Role;
 import com.example.backend.Repositories.ArticleRepository;
 import com.example.backend.Repositories.DomainRepository;
 import com.example.backend.Repositories.EventRepository;
 import com.example.backend.Repositories.StatisticsRepository;
 import com.example.backend.Repositories.UserRepository;
-import com.example.backend.Enum.Role;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class StatisticsService {

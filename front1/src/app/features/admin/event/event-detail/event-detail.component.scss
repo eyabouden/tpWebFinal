@@ -1,3 +1,4 @@
+
 // events.component.scss
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
@@ -365,25 +366,119 @@ host {
   font-size: 1.75rem;
   letter-spacing: -0.5px;
 }
-.event-detail-card {
-    .card-header {
-      border-bottom: 1px solid #f0f0f0;
-    }
+
+
+
+// Event form component styles
+.page-title {
+  h1 {
+    color: #3c4b64;
+    font-weight: 600;
+  }
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #4e73df;
+  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+// Switch styling
+.form-switch .form-check-input {
+  width: 3em;
   
-    .card-body {
-      font-size: 0.95rem;
+  &:checked {
+    background-color: #1cc88a;
+    border-color: #1cc88a;
+  }
+}
+
+// Custom styling for invalid fields
+.is-invalid {
+  border-color: #e74a3b;
   
-      i {
-        font-size: 1rem;
-      }
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(231, 74, 59, 0.25);
+  }
+}
+
+// Animation for the form card
+c-card {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Required field indicator
+.text-danger {
+  font-weight: bold;
+}
+
+// Custom styling for the description textarea
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+// Button styling
+.btn-primary {
+  background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+  border: none;
+  box-shadow: 0 4px 6px rgba(78, 115, 223, 0.25);
+  transition: all 0.3s ease;
   
-      .badge {
-        font-size: 0.8rem;
-      }
-    }
-  
-    .card-footer {
-      border-top: 1px solid #f0f0f0;
-    }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(78, 115, 223, 0.3);
   }
   
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-outline-secondary {
+  border-color: #ddd;
+  color: #6c757d;
+  
+  &:hover {
+    background-color: #f8f9fa;
+    color: #5a6268;
+  }
+}
+
+// Custom tooltip for the form fields
+[title] {
+  position: relative;
+  cursor: help;
+}
+
+// Add animation for form validation feedback
+.invalid-feedback {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {transform: translateX(0);}
+  10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
+  20%, 40%, 60%, 80% {transform: translateX(5px);}
+}
+
+// Notification toast styling
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}

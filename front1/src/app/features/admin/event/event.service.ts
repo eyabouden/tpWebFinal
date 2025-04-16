@@ -83,15 +83,19 @@ export class EventService {
       );
   }
 
-  createEvent(eventData: Partial<Event>): Observable<Event> {
-    console.log('Creating new event:', eventData);
-    return this.http.post<Event>(this.apiUrl, eventData, { headers: this.getAuthHeaders() })
-      .pipe(
-        tap(event => console.log('Created event:', event)),
-        catchError(this.handleError)
-      );
-  }
-
+ // In event.service.ts
+createEvent(eventData: Partial<Event>): Observable<Event> {
+  console.log('Creating new event:', eventData);
+  
+  
+  return this.http.post<Event>(this.apiUrl, eventData, { 
+    headers: this.getAuthHeaders(),
+    
+  }).pipe(
+    tap(event => console.log('Created event:', event)),
+    catchError(this.handleError)
+  );
+}
   updateEvent(id: number, eventData: Partial<Event>): Observable<Event> {
     console.log(`Updating event ${id}:`, eventData);
     return this.http.put<Event>(`${this.apiUrl}/${id}`, eventData, { headers: this.getAuthHeaders() })
@@ -125,26 +129,30 @@ export class EventService {
     );
   }
 // In event.service.ts
+// Register user
 addParticipant(eventId: number, userId: number): Observable<Event> {
   return this.http.post<Event>(
     `${this.apiUrl}/${eventId}/register/${userId}`, 
     {}, 
-    { headers: this.getAuthHeaders() }  // Add auth headers here
+    { headers: this.getAuthHeaders() }
   ).pipe(
-    tap(event => console.log('Updated event participants:', event)),
+    tap(event => console.log('Registered to event:', event)),
     catchError(this.handleError)
   );
 }
-  unregisterParticipant(eventId: number, userId: number): Observable<Event> {
-    console.log(`Unregistering user ${userId} from event ${eventId}`);
-    return this.http.delete<Event>(
-      `${this.apiUrl}/${eventId}/unregister/${userId}`, 
-      { headers: this.getAuthHeaders() }
-    ).pipe(
-      tap(event => console.log('Updated event participants:', event)),
-      catchError(this.handleError)
-    );
-  }
+
+// Unregister user
+unregisterParticipant(eventId: number, userId: number): Observable<Event> {
+  console.log(`Unregistering user ${userId} from event ${eventId}`);
+  return this.http.delete<Event>(
+    `${this.apiUrl}/${eventId}/unregister/${userId}`, 
+    { headers: this.getAuthHeaders() }
+  ).pipe(
+    tap(event => console.log('Unregistered from event:', event)),
+    catchError(this.handleError)
+  );
+}
+
 
   getEventParticipants(eventId: number): Observable<User[]> {
     console.log(`Fetching participants for event ${eventId}`);
@@ -240,119 +248,9 @@ addParticipant(eventId: number, userId: number): Observable<Event> {
           }
         ]
       },
-      {
-        id: 3,
-        title: "Atelier de Recherche Collaborative",
-        description: "Un workshop pratique pour encourager la collaboration entre chercheurs de différentes disciplines.",
-        startDate: new Date(2025, 3, 10, 9, 0),
-        endDate: new Date(2025, 3, 11, 17, 0),
-        location: "Institut de Recherche, Salle B-205",
-        eventType: "WORKSHOP",
-        status: "COMPLETED",
-        createdBy: {
-          id: 2,
-          firstName: "Marie",
-          lastName: "Dupont",
-          email: "marie.dupont@example.com",
-          role: "CHERCHEUR"
-        },
-        participants: [
-          {
-            id: 4,
-            firstName: "Sophie",
-            lastName: "Lefebvre",
-            email: "sophie.lefebvre@example.com",
-            role: "ETUDIANT"
-          },
-          {
-            id: 7,
-            firstName: "Claire",
-            lastName: "Bernard",
-            email: "claire.bernard@example.com",
-            role: "CHERCHEUR"
-          }
-        ]
-      },
-      {
-        id: 4,
-        title: "Symposium Annuel de Recherche",
-        description: "Présentations des projets de recherche en cours, avec des intervenants de plusieurs institutions.",
-        startDate: new Date(2025, 4, 5, 8, 30),
-        endDate: new Date(2025, 4, 7, 17, 0),
-        location: "Centre de Conférences International",
-        eventType: "SYMPOSIUM",
-        status: "ONGOING",
-        createdBy: {
-          id: 1,
-          firstName: "Admin",
-          lastName: "User",
-          email: "admin@example.com",
-          role: "ADMIN"
-        },
-        participants: [
-          {
-            id: 2,
-            firstName: "Marie",
-            lastName: "Dupont",
-            email: "marie.dupont@example.com",
-            role: "CHERCHEUR"
-          },
-          {
-            id: 3,
-            firstName: "Jean",
-            lastName: "Martin",
-            email: "jean.martin@example.com",
-            role: "CHERCHEUR"
-          },
-          {
-            id: 7,
-            firstName: "Claire",
-            lastName: "Bernard",
-            email: "claire.bernard@example.com",
-            role: "CHERCHEUR"
-          },
-          {
-            id: 8,
-            firstName: "Michel",
-            lastName: "Robert",
-            email: "michel.robert@example.com",
-            role: "MODERATEUR"
-          }
-        ]
-      },
-      {
-        id: 5,
-        title: "Séminaire: Éthique en IA",
-        description: "Discussion des aspects éthiques dans le développement et l'application de l'intelligence artificielle.",
-        startDate: new Date(2025, 4, 25, 10, 0),
-        endDate: new Date(2025, 4, 25, 12, 0),
-        location: "Bibliothèque Universitaire, Salle de Conférence",
-        eventType: "SEMINAR",
-        status: "UPCOMING",
-        createdBy: {
-          id: 8,
-          firstName: "Michel",
-          lastName: "Robert",
-          email: "michel.robert@example.com",
-          role: "MODERATEUR"
-        },
-        participants: [
-          {
-            id: 5,
-            firstName: "Thomas",
-            lastName: "Dubois",
-            email: "thomas.dubois@example.com",
-            role: "ETUDIANT"
-          },
-          {
-            id: 6,
-            firstName: "Pierre",
-            lastName: "Moreau",
-            email: "pierre.moreau@example.com",
-            role: "ETUDIANT"
-          }
-        ]
-      }
+     
+      
+      
     ];
     
     return of(mockEvents);
