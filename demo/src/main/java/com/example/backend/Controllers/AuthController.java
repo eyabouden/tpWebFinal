@@ -194,24 +194,39 @@ public class AuthController {
         try {
             System.out.println("Register attempt for email: " + registerRequest.getEmail());
     
+            // Debug: print all moderator-specific fields
+            System.out.println("institution = " + registerRequest.getInstitution());
+            System.out.println("position = " + registerRequest.getPosition());
+            System.out.println("department = " + registerRequest.getDepartment());
+            System.out.println("employmentDate = " + registerRequest.getEmploymentDate());
+            System.out.println("grade = " + registerRequest.getGrade());
+    
             // Check if user already exists
             if (userService.existsByEmail(registerRequest.getEmail())) {
-                System.out.println("Registration failed: Email already registered - " + registerRequest.getEmail());
                 return ResponseEntity.badRequest().body("Email already registered");
             }
     
-            // Convert DTO to entity
+            // Create new User entity
             User user = new User();
             user.setEmail(registerRequest.getEmail());
-            user.setPassword(registerRequest.getPassword()); // to be encoded in the service
+            user.setPassword(registerRequest.getPassword()); // Encode inside service
             user.setFirstName(registerRequest.getFirstName());
             user.setLastName(registerRequest.getLastName());
     
-            // Définit le rôle (par défaut USER si null)
-            Role role = registerRequest.getRole() != null ? registerRequest.getRole() : Role.UTILISATEUR;
-            user.setRole(role);
+            // Check for moderator-specific info
+            boolean hasModeratorInfo =
+                isNotBlank(registerRequest.getInstitution()) ||
+                isNotBlank(registerRequest.getPosition()) ||
+                isNotBlank(registerRequest.getDepartment()) ||
+                registerRequest.getEmploymentDate() != null ||
+                isNotBlank(registerRequest.getGrade());
     
-            // Si MODERATEUR, remplir les champs spécifiques
+            // Auto-assign role
+            Role role = hasModeratorInfo ? Role.MODERATEUR : Role.UTILISATEUR;
+            user.setRole(role);
+            System.out.println("Auto-assigned role: " + role);
+    
+            // If moderator, fill extra fields
             if (role == Role.MODERATEUR) {
                 user.setInstitution(registerRequest.getInstitution());
                 user.setPosition(registerRequest.getPosition());
@@ -220,15 +235,24 @@ public class AuthController {
                 user.setGrade(registerRequest.getGrade());
             }
     
-            // Create new user
+            // Save user
             User newUser = userService.createUser(user);
+            System.out.println("Final role saved: " + newUser.getRole());
             System.out.println("User registered successfully: " + newUser.getEmail());
     
             return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    
         } catch (Exception e) {
-            System.out.println("Registration error: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Registration failed: " + e.getMessage());
         }
     }
+    
+    // Helper method
+    private boolean isNotBlank(String str) {
+        return str != null && !str.trim().isEmpty();
+    }
+    
+    
 }    

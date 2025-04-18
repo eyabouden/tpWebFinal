@@ -1,0 +1,556 @@
+<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@4.5.0/dist/css/coreui.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+ <!-- Bootstrap CSS -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+ <!-- Custom styles -->
+<!-- Main Admin Layout -->
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <!-- Sidebar -->
+  <c-sidebar class="sidebar" visible>
+    <c-sidebar-brand class="sidebar-header">
+      <h2>Admin</h2>
+    </c-sidebar-brand>
+    <c-sidebar-nav>
+      <c-sidebar-nav-item routerLink="/dashboard/admin" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/admin/users" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-people"></i>
+        <span>Utilisateur</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/admin/searcher" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-person-badge"></i>
+        <span>Chercheurs</span>
+      </c-sidebar-nav-item>
+      <c-sidebar-nav-item routerLink="/dashboard/admin/domaine" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-gear"></i>
+        <span>Domaines</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/admin/searcher/publication" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-journal-text"></i>
+        <span>Articles</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/event" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-diagram-3"></i>
+        <span>Événements</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-divider class="menu-divider"></c-sidebar-nav-divider>
+
+      
+    </c-sidebar-nav>
+  </c-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <router-outlet></router-outlet> 
+    <!-- Top Navbar - IMPROVED -->
+    <c-header class="top-navbar">
+      <div class="header-left">
+        <c-header-toggler class="toggle-sidebar-btn" type="button">
+          <i class="bi bi-list"></i>
+        </c-header-toggler>
+        <div class="page-title d-none d-md-block">
+          <h4 class="mb-0"></h4>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <div class="header-actions">
+          <!-- Search Box -->
+          <div class="search-box d-none d-md-flex">
+            <input class="form-control form-control-sm" type="search" placeholder="Search...">
+            <button class="search-btn" type="button">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+          
+          <!-- Notifications -->
+          <div class="notification-wrapper">
+            <button class="notification-btn" type="button">
+              <i class="bi bi-bell"></i>
+              <c-badge color="danger" position="top-end" shape="rounded-pill">5</c-badge>
+            </button>
+          </div>
+          
+          <!-- User Profile -->
+          <c-dropdown alignment="end">
+            <button cButton color="light" cDropdownToggle class="user-dropdown-btn">
+              <c-avatar size="md" class="user-avatar"></c-avatar>
+              <span class="d-none d-md-inline ms-2">Admin</span>
+              <i class="bi bi-chevron-down ms-1"></i>
+            </button>
+           
+          </c-dropdown>
+        </div>
+      </div>
+    </c-header>
+
+    <!-- Page Content -->
+    <div class="articles-container">
+      <!-- Page Title -->
+      <div class="page-title mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1>Articles Management</h1>
+          <button cButton color="primary" (click)="openCreateModal()">
+            <svg cIcon name="iconSetService.icons.cilPlus"></svg> New Article
+          </button>
+        </div>
+        <c-breadcrumb>
+          <c-breadcrumb-item>Dashboard</c-breadcrumb-item>
+          <c-breadcrumb-item active>Articles</c-breadcrumb-item>
+        </c-breadcrumb>
+      </div>
+    
+      <!-- Filters and Search -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="statusFilter">Filter by Status</label>
+                <select id="statusFilter" class="form-select" [(ngModel)]="statusFilter" (change)="applyFilters()">
+                  <option value="ALL">All Statuses</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="searchField">Search Articles</label>
+                <input 
+                  type="text" 
+                  id="searchField" 
+                  class="form-control" 
+                  placeholder="Search by title..." 
+                  [(ngModel)]="searchTerm"
+                  (input)="applyFilters()"
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Loading State -->
+      <div *ngIf="loading" class="text-center my-5">
+        <c-spinner color="primary"></c-spinner>
+        <p class="mt-2">Loading articles...</p>
+      </div>
+    
+      <!-- Error State -->
+      <div *ngIf="error && !loading" class="alert alert-danger">
+        {{ error }}
+      </div>
+    
+      <!-- Articles List -->
+      <div *ngIf="!loading && !error" class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Articles ({{ filteredArticles.length }})</h5>
+        </div>
+        <div class="card-body p-0">
+          <table cTable hover responsive="xl">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Domain</th>
+                <th>Status</th>
+                <th>Author</th>
+                <th>Contributors</th>
+                <th>File</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let article of filteredArticles">
+                <td>{{ article.titre }}</td>
+                <td>{{ getDomainName(article) }}</td>
+                <td>
+                  <c-badge [color]="getStatusBadgeColor(article.status)">
+                    {{ article.status }}
+                  </c-badge>
+                </td>
+                <td>
+                  <span *ngIf="article.user">{{ article.user.firstName }} {{ article.user.lastName }}</span>
+                  <span *ngIf="!article.user">Unassigned</span>
+                </td>
+                <td>
+                  <span *ngIf="article.contributions && article.contributions.length">
+                    <span *ngFor="let contrib of article.contributions; let isLast = last">
+                      {{ getContributorName(contrib.contributorId) }}{{ !isLast ? ', ' : '' }}
+                    </span>
+                  </span>
+                  <span *ngIf="!article.contributions || !article.contributions.length">
+                    No contributors
+                  </span>
+                </td>
+                <td>
+                  <button 
+                    *ngIf="article.filePath" 
+                    cButton 
+                    color="info" 
+                    size="sm" 
+                    (click)="downloadFile(article.id)"
+                    title="Download file"
+                  >
+                    <svg cIcon name="cilCloudDownload"></svg>
+                  </button>
+                  <span *ngIf="!article.filePath">No file</span>
+                </td>
+                <td>
+                  <div class="btn-group">
+                    <button cButton color="primary" size="sm" (click)="openEditModal(article)" title="Edit article">
+                      <svg cIcon name="cilPencil"></svg>
+                    </button>
+                    <button cButton color="info" size="sm" (click)="openContributionModal(article)" title="Manage contributors">
+                      <svg cIcon name="cilPeople"></svg>
+                    </button>
+                    <button cButton color="danger" size="sm" (click)="openDeleteModal(article)" title="Delete article">
+                      <svg cIcon name="cilTrash"></svg>
+                    </button>
+                  </div>
+                  <!-- Admin actions for article validation -->
+                  <div *ngIf="article.status === 'PENDING'" class="mt-2">
+                    <button cButton color="success" size="sm" class="me-1" (click)="validateArticle(article.id, 'APPROVED')" title="Approve article">
+                      <svg cIcon name="cilCheck"></svg> Approve
+                    </button>
+                    <button cButton color="danger" size="sm" (click)="validateArticle(article.id, 'REJECTED')" title="Reject article">
+                      <svg cIcon name="cilX"></svg> Reject
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="filteredArticles.length === 0" class="text-center py-4">
+          <p>No articles found matching your criteria.</p>
+        </div>
+      </div>
+
+<!-- Create/Edit Article Modal -->
+<c-modal [visible]="showArticleModal" (visibleChange)="showArticleModal = $event">
+  <c-modal-header>
+    <h5 cModalTitle>{{ currentArticle?.id ? 'Edit Article' : 'Create New Article' }}</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <form>
+      <div class="mb-3">
+        <label for="titre" class="form-label">Article Title</label>
+        <input 
+        type="text" 
+        id="titre" 
+        class="form-control" 
+        [(ngModel)]="articleTitle" 
+        name="titre" 
+        required
+      >
+      </div>
+      <div class="mb-3">
+        <label for="doi" class="form-label">DOI</label>
+        <input 
+        type="text" 
+        id="doi" 
+        class="form-control" 
+        [(ngModel)]="articleDoi" 
+        name="doi" 
+        required
+      >
+      </div>
+      <div class="mb-3">
+        <label for="keyword" class="form-label">Keywords</label>
+        <input 
+  type="text" 
+  id="keyword" 
+  class="form-control" 
+  [(ngModel)]="articleKeyword" 
+  name="keyword" 
+  required
+>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea 
+  id="description" 
+  class="form-control" 
+  rows="5" 
+  [(ngModel)]="articleDescription" 
+  name="description"
+  required
+></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="domainId" class="form-label">Domain</label>
+        <select 
+  id="domainId" 
+  class="form-select" 
+  [(ngModel)]="selectedDomainId" 
+  name="domainId"
+>
+  <option [ngValue]="null">Select a domain</option>
+  <option *ngFor="let domain of domains" [ngValue]="domain.id">{{ domain.nomDomaine }}</option>
+</select>
+      </div>
+      <div class="mb-3">
+        <label for="file" class="form-label">Upload File</label>
+        <input
+          type="file"
+          id="file"
+          class="form-control"
+          (change)="onFileSelected($event)"
+          name="file"
+        >
+        <small *ngIf="currentArticle && currentArticle.filePath" class="form-text text-muted">
+          Current file: {{ currentArticle.filePath.split('/').pop() }}
+        </small>
+        
+      </div>
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="showArticleModal = false">
+      Cancel
+    </button>
+    <button 
+      cButton 
+      color="primary" 
+      (click)="currentArticle?.id ? updateArticle() : createArticle()"
+    >
+      {{ currentArticle?.id ? 'Update' : 'Create' }}
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+<!-- Delete Confirmation Modal -->
+<c-modal [visible]="showDeleteModal" (visibleChange)="showDeleteModal = $event">
+  <c-modal-header>
+    <h5 cModalTitle>Confirm Deletion</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <p>Are you sure you want to delete the article <strong>"{{ currentArticle?.titre }}"</strong>?</p>
+    <p class="text-danger">This action cannot be undone.</p>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="showDeleteModal = false">
+      Cancel
+    </button>
+    <button *ngIf="currentArticle" cButton color="danger" (click)="deleteArticle(currentArticle.id)">
+      Delete
+    </button>
+    
+  </c-modal-footer>
+</c-modal>
+
+<!-- Add Contribution Modal -->
+<c-modal [visible]="showContributionModal" (visibleChange)="showContributionModal = $event">
+  <c-modal-header>
+    <h5 cModalTitle>Manage Contributors</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <!-- Current Contributors List -->
+    <div *ngIf="currentArticle?.contributions && currentArticle?.contributions!.length > 0" class="mb-4">
+      <h6>Current Contributors</h6>
+      <div class="table-responsive">
+        <table cTable small hover>
+          <thead>
+            <tr>
+              <th>Contributor</th>
+              <th>Role</th>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let contribution of currentArticle?.contributions">
+              <td>
+                <div class="d-flex align-items-center">
+                  <c-avatar size="sm" color="secondary" class="me-2">
+                    {{ getInitials(getContributorName(contribution.contributorId)) }}
+                  </c-avatar>
+                  <span>{{ getContributorName(contribution.contributorId) }}</span>
+                </div>
+              </td>
+              <td>
+                <c-badge [color]="getContributionTypeColor(contribution.type!)">
+                  {{ contribution.type }}
+                </c-badge>
+              </td>
+              <td>{{ contribution.date | date:'short' }}</td>
+              <td>{{ contribution.lieu || 'N/A' }}</td>
+              <td>
+                <div class="btn-group">
+                  <button cButton color="primary" size="sm" (click)="openEditContributionModal(contribution)" title="Edit contribution">
+                    <svg [cIcon]="cilPencil"></svg>
+                  </button>
+                  <button cButton color="danger" size="sm" (click)="confirmRemoveContribution(contribution)" title="Remove contribution">
+                    <svg [cIcon]="cilTrash"></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div *ngIf="!currentArticle?.contributions || currentArticle?.contributions?.length === 0" class="alert alert-info">
+      No contributors added yet.
+    </div>
+
+    <!-- Add New Contributor Form -->
+    <div class="mt-4">
+      <h6>Add New Contributor</h6>
+      <form>
+        <div class="mb-3">
+          <label for="contributorId" class="form-label">Select Contributor</label>
+          <select
+          id="contributorId"
+          class="form-select"
+          [(ngModel)]="newContribution.contributorId"
+          name="contributorId"
+          required
+        >
+          <option [ngValue]="null">Select a contributor</option>
+          <option *ngFor="let user of users" 
+                  [ngValue]="user.id" 
+                  [disabled]="isUserAlreadyContributor(user.id) || isUserArticleCreator(user.id)">
+            {{ user.firstName }} {{ user.lastName }}
+            <span *ngIf="isUserAlreadyContributor(user.id)"> (Already added)</span>
+            <span *ngIf="isUserArticleCreator(user.id)"> (Article creator)</span>
+          </option>
+        </select>
+        </div>
+        <div class="mb-3">
+          <label for="contributionType" class="form-label">Contribution Type</label>
+          <select
+            id="contributionType"
+            class="form-select"
+            [(ngModel)]="newContribution.type"
+            name="type"
+            required
+          >
+            <option *ngFor="let type of contributionTypes" [value]="type">
+              {{ type }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="contributionLieu" class="form-label">Location</label>
+          <input
+            type="text"
+            id="contributionLieu"
+            class="form-control"
+            [(ngModel)]="newContribution.lieu"
+            name="lieu"
+            placeholder="Enter location (optional)"
+          >
+        </div>
+        <button 
+          cButton 
+          color="primary" 
+          [disabled]="!newContribution.contributorId || !newContribution.type"
+          (click)="addContribution()"
+        >
+          <svg [cIcon]="cilPlus"></svg> Add Contributor
+        </button>
+      </form>
+    </div>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="showContributionModal = false">
+      Close
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+<!-- Edit Contribution Modal -->
+<c-modal [visible]="showEditContributionModal" (visibleChange)="showEditContributionModal = $event">
+  <c-modal-header>
+    <h5 cModalTitle>Edit Contribution</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <form>
+      <div class="mb-3">
+        <label for="edit-contributor" class="form-label">Contributor</label>
+        <input
+          type="text"
+          id="edit-contributor"
+          class="form-control"
+          [value]="getContributorName(editingContribution.contributorId)"
+          readonly
+        >
+      </div>
+      <div class="mb-3">
+        <label for="edit-contribution-type" class="form-label">Contribution Type</label>
+        <select
+          id="edit-contribution-type"
+          class="form-select"
+          [(ngModel)]="editingContribution.type"
+          name="type"
+          required
+        >
+          <option *ngFor="let type of contributionTypes" [value]="type">
+            {{ type }}
+          </option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="edit-contribution-lieu" class="form-label">Location</label>
+        <input
+          type="text"
+          id="edit-contribution-lieu"
+          class="form-control"
+          [(ngModel)]="editingContribution.lieu"
+          name="lieu"
+          placeholder="Enter location (optional)"
+        >
+      </div>
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="showEditContributionModal = false">
+      Cancel
+    </button>
+    <button 
+      cButton 
+      color="primary" 
+      (click)="updateContribution()"
+    >
+      Update
+    </button>
+  </c-modal-footer>
+</c-modal>
+
+<!-- Remove Contribution Confirmation Modal -->
+<c-modal [visible]="showConfirmRemoveModal" (visibleChange)="showConfirmRemoveModal = $event">
+  <c-modal-header>
+    <h5 cModalTitle>Confirm Removal</h5>
+  </c-modal-header>
+  <c-modal-body>
+    <p>Are you sure you want to remove <strong>{{ getContributorName(contributionToRemove?.contributorId) }}</strong> 
+    ({{ contributionToRemove?.type }}) from this article?</p>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="secondary" (click)="showConfirmRemoveModal = false">
+      Cancel
+    </button>
+    <button 
+      cButton 
+      color="danger" 
+      (click)="removeContribution(contributionToRemove?.id)"
+    >
+      Remove
+    </button>
+  </c-modal-footer>
+</c-modal>
+</div>
+</div>

@@ -3,6 +3,7 @@
 <!-- Main Admin Layout -->
 <div class="admin-layout">
   <!-- Sidebar -->
+  <!-- Sidebar -->
   <c-sidebar class="sidebar" visible>
     <c-sidebar-brand class="sidebar-header">
       <h2>Admin</h2>
@@ -22,8 +23,12 @@
         <i class="bi bi-person-badge"></i>
         <span>Chercheurs</span>
       </c-sidebar-nav-item>
+      <c-sidebar-nav-item routerLink="/dashboard/admin/domaine" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-gear"></i>
+        <span>Domaines</span>
+      </c-sidebar-nav-item>
 
-      <c-sidebar-nav-item routerLink="/dashboard/admin/articles" routerLinkActive="active" class="menu-item">
+      <c-sidebar-nav-item routerLink="/dashboard/admin/searcher/publication" routerLinkActive="active" class="menu-item">
         <i class="bi bi-journal-text"></i>
         <span>Articles</span>
       </c-sidebar-nav-item>
@@ -35,10 +40,7 @@
 
       <c-sidebar-nav-divider class="menu-divider"></c-sidebar-nav-divider>
 
-      <c-sidebar-nav-item routerLink="/dashboard/admin/settings" routerLinkActive="active" class="menu-item">
-        <i class="bi bi-gear"></i>
-        <span>Paramètres</span>
-      </c-sidebar-nav-item>
+      
     </c-sidebar-nav>
   </c-sidebar>
 

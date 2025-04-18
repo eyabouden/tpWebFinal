@@ -15,7 +15,7 @@ public class RegisterRequest {
     private String lastName;
     private String email;
     private String password;
-    private Role role; 
+   // private Role role; 
     // Researcher-specific attributes
     private String institution;
     private String position;

@@ -25,23 +25,27 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User createUser(User user) {
-        
+        // Si le rôle n’est pas défini, assigner UTILISATEUR par défaut
+        if (user.getRole() == null) {
+            user.setRole(Role.UTILISATEUR);
+        }
+    
         user.setFirstName(user.getFirstName());
         user.setLastName(user.getLastName());
         user.setEmail(user.getEmail());
+        
         // Encoder le mot de passe
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
         user.setEmploymentDate(user.getEmploymentDate());
         user.setInstitution(user.getInstitution());
         user.setPosition(user.getPosition());
         user.setGrade(user.getGrade());
         user.setDepartment(user.getDepartment());
-        
-        // Par défaut, assigner le rôle UTILISATEUR
-        user.setRole(Role.UTILISATEUR);
-        
+    
         return userRepository.save(user);
     }
+    
     
     public User changeUserRole(Long userId, Role newRole) {
         User user = getUserById(userId);

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class CreateContributionDTO {
     private Long userId;
+    private Long contributorId;
     private Long articleId;
     private String type;
     private Date date;

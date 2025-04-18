@@ -63,7 +63,9 @@
 package com.example.backend.Entities;
 
 import com.example.backend.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -71,11 +73,10 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
-
 @Entity
 @Getter
 @Setter
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -94,27 +95,27 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // One User can have many Contributions
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-articles")  
+    private List<Article> articles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "user-contributions") 
     private List<Contribution> contributions;
 
-    // One User can have many Comments
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-comments")
     private List<Comment> comments;
 
-    // One User can have many Notifications
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-notifications")
     private List<Notification> notifications;
 
-     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
-    @JsonManagedReference("user-events")  //
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "user-events")
     private List<Event> createdEvents;
 
-    // Many-to-many relationship with Event
     @ManyToMany(mappedBy = "participants")
-    @JsonIgnore  // 
+    @JsonBackReference(value = "event-participants")
     private List<Event> participatingEvents;
 }

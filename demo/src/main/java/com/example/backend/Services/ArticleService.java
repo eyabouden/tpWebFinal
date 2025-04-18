@@ -14,6 +14,7 @@ import com.example.backend.Repositories.UserRepository;
 import com.example.backend.Repositories.ContributionRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.io.Resource;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.File;
 import java.io.IOException;
@@ -156,24 +159,37 @@ public class ArticleService {
     
     // Other methods remain the same...
     
-    // Update the upload and download methods to return DTOs
+    @Value("${file.upload.dir:${user.home}/uploads/articles}")
+    private String uploadDir;
+    
+    @Transactional
     public ArticleDTO uploadFile(Long articleId, MultipartFile file) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new RuntimeException("Article not found with ID: " + articleId));
-
+    
         try {
-            String uploadDir = "uploads/articles/";
+            // Create directory if it doesn't exist
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                boolean dirCreated = directory.mkdirs();
+                if (!dirCreated) {
+                    throw new IOException("Failed to create directory: " + uploadDir);
+                }
+            }
+            
+            // Generate unique filename
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            File dest = new File(uploadDir + fileName);
-
-            dest.getParentFile().mkdirs(); // Create directories if needed
-            file.transferTo(dest);
-
-            article.setFilePath(fileName);
+            Path filePath = Paths.get(uploadDir, fileName).normalize();
+            
+            // Copy file to destination
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            
+            // Store the complete path in the database
+            article.setFilePath(filePath.toString());
             Article saved = articleRepository.save(article);
             return ArticleDTO.fromEntity(saved);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload file", e);
+            throw new RuntimeException("Failed to upload file: " + e.getMessage(), e);
         }
     }
 
@@ -365,22 +381,27 @@ public class ArticleService {
 
 public Resource downloadFile(Long articleId) {
     Article article = articleRepository.findById(articleId)
-    .orElseThrow(() -> new RuntimeException("Article not found"));
+            .orElseThrow(() -> new RuntimeException("Article not found"));
 
-    String uploadDir = "uploads/articles/";
+    // Get the file path from the article entity
+    String filePath = article.getFilePath();
+    if (filePath == null || filePath.isEmpty()) {
+        throw new RuntimeException("No file associated with this article");
+    }
+
     try {
-        Path filePath = Paths.get(uploadDir).resolve(article.getFilePath()).normalize();
-        Resource resource = new UrlResource(filePath.toUri());
+        // Create a path to the file
+        Path path = Paths.get(filePath).normalize();
+        Resource resource = new UrlResource(path.toUri());
 
         if (resource.exists()) {
             return resource;
         } else {
-            throw new RuntimeException("File not found");
+            throw new RuntimeException("File not found: " + filePath);
         }
     } catch (MalformedURLException e) {
-        throw new RuntimeException("File not found", e);
+        throw new RuntimeException("File not found: " + e.getMessage(), e);
     }
 }
-
     
 }

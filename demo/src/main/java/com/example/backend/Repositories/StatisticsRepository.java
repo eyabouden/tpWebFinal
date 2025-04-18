@@ -19,17 +19,17 @@ public interface StatisticsRepository extends JpaRepository<Statistics, Long> {
     // Count by article ID and action type
     
     
-    // Count downloads by domain and group by month
-    @Query(value = "SELECT d.name AS domain, COUNT(s.id) AS count, " +
-           "MONTH(s.action_date) AS month FROM statistics s " +
-           "JOIN article a ON s.article_id = a.id " +
-           "JOIN domain d ON a.domain_id = d.id " +
-           "WHERE s.action_type = 'DOWNLOAD' " +
-           "GROUP BY d.name, MONTH(s.action_date) " +
-           "ORDER BY d.name, MONTH(s.action_date)", 
-           nativeQuery = true)
-    List<Object[]> countDownloadsByDomain();
-    
+    @Query(value = "SELECT d.nom_domaine AS domain, COUNT(s.id) AS count, " +
+       "MONTH(s.action_date) AS month " +
+       "FROM statistics s " +
+       "JOIN article a ON s.article_id = a.id " +
+       "JOIN domain d ON a.domaine_id = d.id " +  // This is the corrected join
+       "WHERE s.action_type = 'DOWNLOAD' " +
+       "GROUP BY d.nom_domaine, MONTH(s.action_date) " +
+       "ORDER BY d.nom_domaine, MONTH(s.action_date)", 
+       nativeQuery = true)
+List<Object[]> countDownloadsByDomain();
+
     // Get monthly stats for views and downloads
     @Query(value = "SELECT YEAR(s.action_date) AS year, " +
            "MONTH(s.action_date) AS month, " +

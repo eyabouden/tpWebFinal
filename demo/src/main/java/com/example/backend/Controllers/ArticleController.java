@@ -1,17 +1,27 @@
 package com.example.backend.Controllers;
 
 import com.example.backend.Dto.ArticleDTO;
+import com.example.backend.Dto.ContributionDTO;
+import com.example.backend.Dto.CreateContributionDTO;
 import com.example.backend.Entities.Article;
+import com.example.backend.Entities.Contribution;
+import com.example.backend.Entities.User;
 import com.example.backend.Services.ArticleService;
+import com.example.backend.Services.ContributionService;
+import com.example.backend.Services.UserService;
+
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -19,7 +29,13 @@ import java.util.List;
 public class ArticleController {
 
     @Autowired
+    private ContributionService contributionService;
+    
+    @Autowired
     private ArticleService articleService;
+    
+    @Autowired
+    private UserService userService;
 
    
     @GetMapping()
@@ -33,9 +49,18 @@ public class ArticleController {
         return articleService.getArticleById(id);
     }
 
+    // Modified to use RequestParam for articleDTO to prevent circular reference issues
     @PostMapping
-    public ArticleDTO createArticle(@RequestBody ArticleDTO articleDTO, @RequestParam Long userId) {
-        return articleService.createArticle(articleDTO, userId);
+    public ResponseEntity<ArticleDTO> createArticle(
+            @RequestBody ArticleDTO articleDTO,
+            @RequestParam Long userId) {
+        try {
+            ArticleDTO created = articleService.createArticle(articleDTO, userId);
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/{id}")
@@ -46,11 +71,67 @@ public class ArticleController {
         return articleService.updateArticle(id, articleDTO, userId);
     }
 
+    // Rest of the controller remains unchanged...
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id, @RequestParam Long userId) {
         articleService.deleteArticle(id, userId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{articleId}/contributions")
+    public ResponseEntity<ContributionDTO> addContribution(
+            @PathVariable Long articleId,
+            @RequestBody CreateContributionDTO contributionDto,
+            @RequestParam Long userId) {
+        
+        try {
+            // Get article entity
+            Article article = articleService.getArticleEntityById(articleId);
+            if (article == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Verify the contributor exists
+            User contributor = userService.getUserById(contributionDto.getContributorId());
+            if (contributor == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // Verify the user has permission
+            User user = userService.getUserById(userId);
+            if (user == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // Check for duplicate contribution
+            boolean isDuplicate = article.getContributions().stream()
+                .anyMatch(c -> c.getUser().getId().equals(contributionDto.getContributorId()) 
+                        && c.getType().equals(contributionDto.getType()));
+                        
+            if (isDuplicate) {
+                return ResponseEntity.badRequest()
+                    .body(null); // Could return error message
+            }
+            
+            // Create and save the contribution
+            Contribution contribution = new Contribution();
+            contribution.setArticle(article);
+            contribution.setUser(contributor);
+            contribution.setType(contributionDto.getType());
+            contribution.setDate(new Date());
+            contribution.setLieu(contributionDto.getLieu() != null ? contributionDto.getLieu() : "Not specified");
+            
+            Contribution savedContribution = contributionService.saveContribution(contribution);
+            
+            // Return the contribution DTO
+            return ResponseEntity.ok(ContributionDTO.fromEntity(savedContribution));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    
 
     @PutMapping("/{id}/validate")
     public Article validateArticle(
@@ -77,19 +158,20 @@ public class ArticleController {
 
     @GetMapping("/{articleId}/download")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long articleId) {
-        Resource resource = articleService.downloadFile(articleId);
-        
-        String filename = "document.pdf"; // Default filename
-        Article article = articleService.getArticleEntityById(articleId);
-
-        if (article.getFilePath() != null && !article.getFilePath().isEmpty()) {
-            filename = article.getFilePath().substring(article.getFilePath().lastIndexOf('/') + 1);
+        try {
+            Resource resource = articleService.downloadFile(articleId);
+            
+            // Get the article to determine the file name
+            Article article = articleService.getArticleEntityById(articleId);
+            String filename = article.getFilePath().substring(article.getFilePath().lastIndexOf('/') + 1);
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
-        
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .body(resource);
     }
 }
         

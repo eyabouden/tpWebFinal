@@ -90,16 +90,21 @@
 // }
 package com.example.backend.Entities;
 
+import java.util.List;
+import java.util.Date;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -116,29 +121,24 @@ public class Article {
     
     @Column(nullable = false, length = 2000)
     private String description;
+    
     @Column(nullable = false)
     private String status = "PENDING"; 
     
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "user-articles")  
     private User user;
 
-    
-    // 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference(value = "article-contributions")  
     private List<Contribution> contributions;
-    
-    // Research domain
+
     @ManyToOne
     @JoinColumn(name = "domaine_id")
-    @JsonBackReference
+    @JsonBackReference(value = "domain-articles") 
     private Domain domain;
     
     @Column(name = "file_path")
-private String filePath;
-
-    
+    private String filePath;
 }

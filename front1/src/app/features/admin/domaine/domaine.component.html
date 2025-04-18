@@ -1,0 +1,252 @@
+<link href="https://cdn.jsdelivr.net/npm/@coreui/coreui@4.5.0/dist/css/coreui.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<!-- Main Admin Layout -->
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <c-sidebar class="sidebar" visible>
+    <c-sidebar-brand class="sidebar-header">
+      <h2>Admin</h2>
+    </c-sidebar-brand>
+    <c-sidebar-nav>
+      <c-sidebar-nav-item routerLink="/dashboard/admin" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/admin/users" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-people"></i>
+        <span>Utilisateur</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/admin/searcher" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-person-badge"></i>
+        <span>Chercheurs</span>
+      </c-sidebar-nav-item>
+      <c-sidebar-nav-item routerLink="/dashboard/admin/domaine" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-gear"></i>
+        <span>Domaines</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/admin/searcher/publication" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-journal-text"></i>
+        <span>Articles</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-item routerLink="/dashboard/event" routerLinkActive="active" class="menu-item">
+        <i class="bi bi-diagram-3"></i>
+        <span>Événements</span>
+      </c-sidebar-nav-item>
+
+      <c-sidebar-nav-divider class="menu-divider"></c-sidebar-nav-divider>
+
+      
+    </c-sidebar-nav>
+  </c-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <router-outlet></router-outlet> 
+    <!-- Top Navbar - IMPROVED -->
+    <c-header class="top-navbar">
+      <div class="header-left">
+        <c-header-toggler class="toggle-sidebar-btn" type="button">
+          <i class="bi bi-list"></i>
+        </c-header-toggler>
+        <div class="page-title d-none d-md-block">
+          <h4 class="mb-0"></h4>
+        </div>
+      </div>
+      
+      <div class="header-right">
+        <div class="header-actions">
+          <!-- Search Box -->
+          <div class="search-box d-none d-md-flex">
+            <input class="form-control form-control-sm" type="search" placeholder="Search...">
+            <button class="search-btn" type="button">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+          
+          <!-- Notifications -->
+          <div class="notification-wrapper">
+            <button class="notification-btn" type="button">
+              <i class="bi bi-bell"></i>
+              <c-badge color="danger" position="top-end" shape="rounded-pill">5</c-badge>
+            </button>
+          </div>
+          
+          <!-- User Profile -->
+          <c-dropdown alignment="end">
+            <button cButton color="light" cDropdownToggle class="user-dropdown-btn">
+              <c-avatar size="md" class="user-avatar"></c-avatar>
+              <span class="d-none d-md-inline ms-2">Admin</span>
+              <i class="bi bi-chevron-down ms-1"></i>
+            </button>
+           
+          </c-dropdown>
+        </div>
+      </div>
+    </c-header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <!-- Dashboard Overview -->
+      <div class="dashboard-container">
+        <div class="dashboard-container">
+            <!-- Page Title -->
+            <div class="page-title mb-4">
+              <h1>Domaines de Recherche</h1>
+              <c-breadcrumb>
+                <c-breadcrumb-item>Dashboard/</c-breadcrumb-item>
+                <c-breadcrumb-item active>Domaines</c-breadcrumb-item>
+              </c-breadcrumb>
+            </div>
+          
+            <!-- Action Buttons -->
+            <div class="row mb-3">
+              <div class="col-xl-12">
+                <button cButton color="primary" (click)="showAddDomainForm()" *ngIf="!isAddingDomain">
+                  <i class="bi bi-plus-circle"></i> Ajouter un domaine
+                </button>
+              </div>
+            </div>
+          
+            <!-- Add Domain Form -->
+            <div class="row mb-4" *ngIf="isAddingDomain">
+              <div class="col-xl-12">
+                <app-card cardTitle="Ajouter un domaine" [options]="false">
+                  <form (ngSubmit)="addDomain()">
+                    <div class="mb-3">
+                      <label for="nomDomaine" class="form-label">Nom du domaine</label>
+                      <input type="text" cFormControl id="nomDomaine" [(ngModel)]="newDomain.nomDomaine" name="nomDomaine" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button cButton type="submit" color="success">Ajouter</button>
+                      <button cButton type="button" color="secondary" (click)="cancelAddDomain()">Annuler</button>
+                    </div>
+                  </form>
+                </app-card>
+              </div>
+            </div>
+          
+            <!-- Domains Table Card -->
+            <div class="row">
+              <div class="col-xl-12">
+                <app-card cardTitle="Domaines" [options]="false" blockClass="table-border-style">
+                  <div *ngIf="loading" class="text-center py-5">
+                    <c-spinner></c-spinner>
+                  </div>
+          
+                  <div *ngIf="error" class="alert alert-danger">
+                    {{ error }}
+                  </div>
+          
+                  <div class="table-responsive" *ngIf="!loading && !error">
+                    <table class="table table-hover table-striped">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Nom du domaine</th>
+                          <th>Nombre d'articles</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let domain of domains">
+                          <td>{{ domain.id }}</td>
+                          <td>
+                            <span *ngIf="!isEditing(domain.id)">{{ domain.nomDomaine }}</span>
+                            <div *ngIf="isEditing(domain.id)">
+                              <input cFormControl type="text" [(ngModel)]="editForm.nomDomaine" placeholder="Nom du domaine" class="form-control form-control-sm">
+                            </div>
+                          </td>
+                          <td>{{ getArticleCount(domain) }}</td>
+                          <td>
+                            <div class="action-buttons">
+                              <!-- View Button -->
+                              <!-- <button cButton color="info" size="sm" title="Voir les détails" (click)="viewDomain(domain)">
+                                <i class="bi bi-eye"></i>
+                              </button> -->
+                              
+                              <!-- Edit/Save Buttons -->
+                              <button *ngIf="!isEditing(domain.id)" cButton color="primary" size="sm" title="Modifier le domaine" (click)="editDomain(domain)">
+                                <i class="bi bi-pencil"></i>
+                              </button>
+                              <button *ngIf="isEditing(domain.id)" cButton color="success" size="sm" title="Enregistrer les changements" (click)="saveDomain()">
+                                <i class="bi bi-check-lg"></i>
+                              </button>
+                              
+                              <!-- Cancel Button (only when editing) -->
+                              <button *ngIf="isEditing(domain.id)" cButton color="secondary" size="sm" title="Annuler la modification" (click)="cancelEdit()">
+                                <i class="bi bi-x-lg"></i>
+                              </button>
+                              
+                              <!-- Delete Button -->
+                              <button cButton color="danger" size="sm" title="Supprimer le domaine" (click)="deleteDomain(domain.id)">
+                                <i class="bi bi-trash"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+          
+                  <div *ngIf="!loading && !error && domains.length === 0" class="text-center py-5">
+                    Aucun domaine trouvé.
+                  </div>
+                </app-card>
+              </div>
+            </div>
+          
+            <!-- Domain Details Modal -->
+            <div *ngIf="showDomainDetails && selectedDomain" class="modal fade show" style="display: block">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">{{ selectedDomain.nomDomaine }}</h5>
+                    <button type="button" class="btn-close" (click)="showDomainDetails = false"></button>
+                  </div>
+                  <div class="modal-body">
+                    <dl class="row">
+                      <dt class="col-sm-4">ID:</dt>
+                      <dd class="col-sm-8">{{ selectedDomain.id }}</dd>
+                      
+                      <dt class="col-sm-4">Nom du domaine:</dt>
+                      <dd class="col-sm-8">{{ selectedDomain.nomDomaine }}</dd>
+                      
+                      <dt class="col-sm-12">Articles dans ce domaine:</dt>
+                      <dd class="col-sm-12">
+                        <div *ngIf="selectedDomain.articles && selectedDomain.articles.length > 0">
+                          <table class="table table-sm">
+                            <thead>
+                              <tr>
+                                <th>ID</th>
+                                <th>Titre</th>
+                                <th>Auteur</th>
+                                <th>Date de publication</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let article of selectedDomain.articles">
+                                <td>{{ article.id }}</td>
+                                <td>{{ article.title }}</td>
+                                <td>{{ article.author?.firstName }} {{ article.author?.lastName }}</td>
+                                <td>{{ article.publicationDate | date }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div *ngIf="!selectedDomain.articles || selectedDomain.articles.length === 0">
+                          Aucun article dans ce domaine.
+                        </div>
+                      </dd>
+                    </dl>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="showDomainDetails = false">Fermer</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>

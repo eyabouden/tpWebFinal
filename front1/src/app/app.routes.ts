@@ -12,13 +12,20 @@ import { UsersComponent } from './features/admin/users/users.component';
 import { EventComponent } from './features/admin/event/event.component';
 import { EventDetailComponent } from './features/admin/event/event-detail/event-detail.component';
 
-import { ResearchersComponent } from './features/admin/researchers/researchers-management.component';
+
+//import { ResearchersComponent } from './features/admin/researchers/researchers-management.component';
 import { ResearcherLayoutComponent } from './layouts/researcher-layout/researcher-layout.component';
 import { ResearcherDashboardComponent } from './features/researcher/dashboard/researcher-dashboard.component';
 
 
 import { UploadArticleComponent } from './features/researcher/publication/uploadArticle/upload-article.component';
 import { ProfileComponent } from './features/researcher/profile/profile.component';
+
+import { PublicationComponent } from './features/admin/publications/publication.component';
+//import { ResearchersComponent } from './features/admin/researchers/researchers-management.component';
+import { DomainComponent } from './features/admin/domaine/domaine.component';
+import { ResearchersComponent } from './features/admin/researchers/researchers-management.component';
+
 export const appRoutes: Routes = [
   {
     path: '',
@@ -52,6 +59,7 @@ export const appRoutes: Routes = [
     component: EventDetailComponent,
     data: { mode: 'edit' }
   },
+
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
@@ -94,6 +102,7 @@ export const appRoutes: Routes = [
   { path: 'dashboard/event', component: EventComponent },
   { path: 'dashboard/event/detail', component: EventDetailComponent },
   { path: 'dashboard/admin/users', component: ResearchersComponent },
+  { path: 'dashboard/admin/domaine', component: DomainComponent },
   { path: 'dashboard/admin/searcher', component: ResearchersComponent },
   //{ path: 'dashboard/admin/searcher/publication', component: PublicationComponent },
   { path: 'dashboard/utilisateur', component: UtilisateurDashboardComponent },

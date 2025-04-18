@@ -55,17 +55,16 @@ public class Contribution {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
-    private User user; 
+    @JsonBackReference(value = "user-contributions")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "article_id", nullable = false)
-    @JsonBackReference
-    private Article article; 
+    @JsonBackReference(value = "article-contributions") 
+    private Article article;
 
-    private String type; //  "Primary Author", "Co-author", "Editor", "Reviewer" 
+    private String type; // "AUTHOR", "REVIEWER", "EDITOR", "CONTRIBUTOR" 
 
     private Date date; 
     private String lieu; 
-    
 }

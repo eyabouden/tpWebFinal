@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ContributionService {
@@ -32,9 +33,8 @@ public class ContributionService {
         return contributionRepository.findAll();
     }
     
-    public Contribution getContributionById(Long id) {
-        return contributionRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Contribution non trouvée avec l'ID : " + id));
+    public Optional<Contribution> getContributionById(Long id) {
+        return contributionRepository.findById(id);
     }
     
     @Transactional
@@ -57,7 +57,8 @@ public class ContributionService {
     
     @Transactional
     public Contribution updateContribution(Long id, UpdateContributionDTO dto) {
-        Contribution contribution = getContributionById(id);
+        Contribution contribution = contributionRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Contribution non trouvée avec l'ID : " + id));
         
         if (dto.getType() != null) {
             contribution.setType(dto.getType());
@@ -74,6 +75,7 @@ public class ContributionService {
         return contributionRepository.save(contribution);
     }
     
+    @Transactional
     public void deleteContribution(Long id) {
         contributionRepository.deleteById(id);
     }
@@ -84,5 +86,10 @@ public class ContributionService {
     
     public List<Contribution> getContributionsByUserId(Long userId) {
         return contributionRepository.findByUserId(userId);
+    }
+    
+    @Transactional
+    public Contribution saveContribution(Contribution contribution) {
+        return contributionRepository.save(contribution);
     }
 }
