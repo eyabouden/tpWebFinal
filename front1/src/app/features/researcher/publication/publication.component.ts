@@ -47,7 +47,7 @@ export class PublicationsComponent implements OnInit {
       cilTrash
     };
   }
-
+  
   ngOnInit(): void {
     this.loadPublications();
   }

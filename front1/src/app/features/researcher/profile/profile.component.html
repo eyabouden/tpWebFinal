@@ -1,47 +1,154 @@
 <!-- profile.component.html -->
-<div class="container my-5 profile-page">
-    <div class="card p-4 shadow-sm">
-      <div class="d-flex align-items-center">
-        <img src="assets/avatar-placeholder.png" alt="Profile Picture" class="rounded-circle profile-img me-4">
-        <div>
-          <h3 class="mb-1">Dr. Jane Doe</h3>
-          <p class="text-muted mb-1">Senior Researcher, Department of AI</p>
-          <p class="text-muted mb-0">janedoe.com</p>
-        </div>
-      </div>
-  
-      <hr class="my-4">
-  
-      <!-- Bio -->
-      <div class="mb-3">
-        <h5>About Me</h5>
-        <p>
-          Passionate researcher in Artificial Intelligence and Machine Learning with 10+ years of experience.
-          My research focuses on real-time neural network optimization and large-scale model deployment.
-        </p>
-      </div>
-  
-      <!-- Stats -->
-      <div class="mb-3">
-        <h5>Statistics</h5>
-        <div class="d-flex flex-wrap gap-3">
-          <div class="badge bg-primary-subtle text-primary p-2 rounded-2">
-            <strong>24</strong> Publications
+<div class="container my-5 profile-page" *ngIf="user">
+    <div class="card shadow-lg border-0 rounded-3">
+      <!-- Profile Header -->
+      <div class="card-header bg-gradient bg-light p-4">
+        <div class="d-flex align-items-center">
+          <div class="position-relative">
+            <img src="assets/avatar-placeholder.png" alt="Profile Picture" class="rounded-circle profile-img border border-3 border-white shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
           </div>
-          <div class="badge bg-success-subtle text-success p-2 rounded-2">
-            <strong>315</strong> Citations
+          <div class="ms-4">
+            <h2 class="mb-1 fw-bold">{{ user.firstName }} {{ user.lastName }}</h2>
+            <div class="d-flex align-items-center">
+              <span class="badge bg-primary me-2">{{ user.role }}</span>
+              <span class="text-muted">{{ user.email }}</span>
+            </div>
           </div>
-          <div class="badge bg-warning-subtle text-warning p-2 rounded-2">
-            <strong>58</strong> Downloads
+          <div class="ms-auto">
+            <button class="btn btn-outline-primary rounded-pill px-4" (click)="editProfile()">
+              <i class="bi bi-pencil-square me-2"></i>Edit Profile
+            </button>
           </div>
         </div>
       </div>
-  
-      <!-- Buttons -->
-      <div class="d-flex justify-content-end mt-4">
-        <button class="btn btn-outline-secondary me-2">Edit Profile</button>
-        <button class="btn btn-outline-primary">Change Password</button>
+      
+      <div class="card-body p-4">
+        <!-- Professional details section for MODERATEUR -->
+        <div *ngIf="user.role === 'MODERATEUR'" class="mb-4">
+          <h4 class="text-primary mb-4 border-bottom pb-2">Professional Information</h4>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="card h-100 bg-light border-0 p-3">
+                <div class="d-flex align-items-center mb-3">
+                  <i class="bi bi-building text-primary fs-4 me-2"></i>
+                  <h5 class="mb-0">Institution</h5>
+                </div>
+                <p class="mb-0">{{ user.institution || 'Not specified' }}</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100 bg-light border-0 p-3">
+                <div class="d-flex align-items-center mb-3">
+                  <i class="bi bi-award text-primary fs-4 me-2"></i>
+                  <h5 class="mb-0">Grade</h5>
+                </div>
+                <p class="mb-0">{{ user.grade || 'Not specified' }}</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100 bg-light border-0 p-3">
+                <div class="d-flex align-items-center mb-3">
+                  <i class="bi bi-briefcase text-primary fs-4 me-2"></i>
+                  <h5 class="mb-0">Position</h5>
+                </div>
+                <p class="mb-0">{{ user.position || 'Not specified' }}</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100 bg-light border-0 p-3">
+                <div class="d-flex align-items-center mb-3">
+                  <i class="bi bi-diagram-3 text-primary fs-4 me-2"></i>
+                  <h5 class="mb-0">Department</h5>
+                </div>
+                <p class="mb-0">{{ user.department || 'Not specified' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" [class.show]="showEditModal" [style.display]="showEditModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title">Edit Profile</h5>
+          <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form>
+            <!-- Alert for save success -->
+            <div *ngIf="saveSuccess" class="alert alert-success mb-3 d-flex align-items-center">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              Profile updated successfully!
+            </div>
+            
+            <!-- Personal Info -->
+            <div class="mb-3">
+              <label for="firstName" class="form-label">First Name</label>
+              <input type="text" class="form-control form-control-lg" id="firstName" [(ngModel)]="editUserForm.firstName" name="firstName">
+            </div>
+            <div class="mb-3">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input type="text" class="form-control form-control-lg" id="lastName" [(ngModel)]="editUserForm.lastName" name="lastName">
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control form-control-lg" id="email" [(ngModel)]="editUserForm.email" name="email">
+            </div>
+            
+            <!-- Professional Info for MODERATEUR -->
+            <div *ngIf="user?.role === 'MODERATEUR'">
+              <h6 class="mt-4 mb-3 text-primary">Professional Information</h6>
+              <div class="mb-3">
+                <label for="institution" class="form-label">Institution</label>
+                <input type="text" class="form-control" id="institution" [(ngModel)]="editUserForm.institution" name="institution">
+              </div>
+              <div class="mb-3">
+                <label for="grade" class="form-label">Grade</label>
+                <input type="text" class="form-control" id="grade" [(ngModel)]="editUserForm.grade" name="grade">
+              </div>
+              <div class="mb-3">
+                <label for="position" class="form-label">Position</label>
+                <input type="text" class="form-control" id="position" [(ngModel)]="editUserForm.position" name="position">
+              </div>
+              <div class="mb-3">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" class="form-control" id="department" [(ngModel)]="editUserForm.department" name="department">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-secondary px-4" (click)="closeEditModal()">Cancel</button>
+          <button type="button" class="btn btn-primary px-4" (click)="saveUserProfile()" [disabled]="isSaving">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal backdrop -->
+  <div class="modal-backdrop fade show" *ngIf="showEditModal"></div>
+  
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="container my-5">
+    <div class="alert alert-danger d-flex align-items-center">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <div>{{ errorMessage }}</div>
+    </div>
+  </div>
+  
+  <!-- Loading State -->
+  <div *ngIf="!user && !errorMessage" class="container my-5">
+    <div class="d-flex flex-column align-items-center justify-content-center py-5">
+      <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="text-muted">Loading your profile...</p>
+    </div>
+  </div>

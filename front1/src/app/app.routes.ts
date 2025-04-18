@@ -16,6 +16,9 @@ import { ResearchersComponent } from './features/admin/researchers/researchers-m
 import { ResearcherLayoutComponent } from './layouts/researcher-layout/researcher-layout.component';
 import { ResearcherDashboardComponent } from './features/researcher/dashboard/researcher-dashboard.component';
 
+
+import { UploadArticleComponent } from './features/researcher/publication/uploadArticle/upload-article.component';
+import { ProfileComponent } from './features/researcher/profile/profile.component';
 export const appRoutes: Routes = [
   {
     path: '',
@@ -49,22 +52,21 @@ export const appRoutes: Routes = [
     component: EventDetailComponent,
     data: { mode: 'edit' }
   },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   {
     path: 'researcher',
     component: ResearcherLayoutComponent,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: ResearcherDashboardComponent },
+  
       {
         path: 'publications',
         loadComponent: () =>
           import('./features/researcher/publication/publication.component').then(m => m.PublicationsComponent),
-        children:[
-          {
-            path: 'submit',
-            loadComponent: () =>
-              import('./features/researcher/publication/uploadArticle/upload-article.component').then(m => m.UploadArticleComponent)
-          },
+        children: [
+          { path: 'art2', component: UploadArticleComponent },
         ]
       },
       {
@@ -77,14 +79,18 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./features/researcher/bookmark/bookmark.component').then(m => m.BookmarkComponent)
       },
-     
-      // Add other researcher routes as needed
+  
+      // ✅ Add profile route here
+      
+  
+      // Add more researcher routes as needed
     ]
   },
   
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  
+  //{ path: 'researcher/profile', component: ProfileComponent },
   { path: 'dashboard/admin', component: AdminDashboardComponent },
+  { path: 'art', component: UploadArticleComponent },
   { path: 'dashboard/event', component: EventComponent },
   { path: 'dashboard/event/detail', component: EventDetailComponent },
   { path: 'dashboard/admin/users', component: ResearchersComponent },

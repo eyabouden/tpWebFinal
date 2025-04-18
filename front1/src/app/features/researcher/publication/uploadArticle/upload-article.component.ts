@@ -103,15 +103,12 @@ export class UploadArticleComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
   
-    // Get the current user ID (replace with actual authentication)
-    const currentUserId = 1; // This should come from your auth service
+    const articleData = this.articleForm.value;
   
-    // Create the article first
-    this.articleService.createArticle(this.articleForm.value, currentUserId).subscribe({
+    this.articleService.createArticle(articleData).subscribe({
       next: (createdArticle) => {
         console.log('Article created:', createdArticle);
-        
-        // If there's a file to upload
+  
         if (this.selectedFile && createdArticle.id) {
           this.uploadFile(createdArticle.id);
         } else {
@@ -125,7 +122,8 @@ export class UploadArticleComponent implements OnInit {
       }
     });
   }
-
+  
+  
   uploadFile(articleId: number): void {
     if (!this.selectedFile) {
       this.handleSuccessfulSubmission();

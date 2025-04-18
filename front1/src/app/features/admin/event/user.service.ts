@@ -8,6 +8,7 @@ import { User } from '../event/event.service';
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserService {
   private apiUrl = 'http://localhost:8080/api/users';
 
@@ -32,6 +33,25 @@ export class UserService {
         })
       );
   }
+  // user.service.ts
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() })
+      .pipe(
+        tap(user => console.log('Fetched user:', user)),
+        catchError(error => {
+          console.error(`Error fetching user with ID ${id}:`, error);
+          // For development, you could fall back to a mock user from your mock data
+          if (error.status === 403) {
+            console.error('Permission denied accessing user profile');
+          }
+          return throwError(() => error);
+        })
+      );
+  }
+  
+  
+  
+  
 
   searchUsers(term: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/search?term=${term}`, { headers: this.getAuthHeaders() })

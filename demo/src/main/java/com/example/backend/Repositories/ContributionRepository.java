@@ -10,4 +10,5 @@ import java.util.List;
 public interface ContributionRepository extends JpaRepository<Contribution, Long> {
     List<Contribution> findByArticleId(Long articleId);
     List<Contribution> findByUserId(Long userId);
+    Long countByUserId(Long userId);
 }

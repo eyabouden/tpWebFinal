@@ -18,19 +18,17 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     
     List<Object[]> countArticlesByDomain();
 
-    Long countByUserId(Long userId);
 
-    List<Article> findByKeywordContaining(String keyword); 
-    Optional<Article> findByDoi(String doi); // 
+
+    List<Article> findByKeywordContaining(String keyword); // Custom method
+    Optional<Article> findByDoi(String doi); // Custom method
     List<Article> findByDomainId(Long domainId);
     
+    // Find articles by keywords (case insensitive)
     List<Article> findByKeywordContainingIgnoreCase(String keyword);
     
+    // Find articles by title (case insensitive)
     List<Article> findByTitreContainingIgnoreCase(String titre);
-
-
-
-    List<Article> findByStatus(String status);
    
 }
 

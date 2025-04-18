@@ -1,79 +1,16 @@
-<!-- <div class="bg-light min-vh-100 d-flex flex-row align-items-center">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card mb-4 mx-4">
-          <div class="card-body p-4">
-            <h1>Login</h1>
-            <p class="text-medium-emphasis">Sign In to your account</p>
-            
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-              <div class="input-group mb-3">
-                <span class="input-group-text">
-                  <svg cIcon name="cilUser"></svg>
-                </span>
-                <input 
-                  cFormControl 
-                  placeholder="Email" 
-                  formControlName="email" 
-                  type="email"
-                  [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)}"
-                />
-                <div *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.dirty || loginForm.get('email')?.touched)" class="invalid-feedback">
-                  <div *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</div>
-                  <div *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email address</div>
-                </div>
-              </div>
-              
-              <div class="input-group mb-4">
-                <span class="input-group-text">
-                  <svg cIcon name="cilLockLocked"></svg>
-                </span>
-                <input 
-                  cFormControl 
-                  placeholder="Password" 
-                  formControlName="password" 
-                  type="password"
-                  [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)}"
-                />
-                <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)" class="invalid-feedback">
-                  <div *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</div>
-                </div>
-              </div>
-              
-              <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
-              
-              <div class="row">
-                <div class="col-6">
-                  <button cButton color="primary" class="px-4" type="submit" [disabled]="loginForm.invalid || isLoading">
-                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                    Login
-                  </button>
-                </div>
-                <div class="col-6 text-right">
-                  <button cButton color="link" class="px-0" type="button" routerLink="/register">
-                    Register Now!
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->
-
 <div class="bg-light min-vh-100 d-flex flex-row align-items-center">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-8 col-lg-6 col-xl-5">
-        <div class="card shadow-sm p-4 mb-4">
-          <div class="card-body">
-            <h1 class="text-center mb-4">Login</h1>
+        <div class="card shadow-lg border-0 rounded-lg">
+          <div class="card-header bg-primary bg-gradient text-white">
+            <h3 class="text-center font-weight-light my-2">Login</h3>
+          </div>
+          <div class="card-body p-4">
             
-            <div *ngIf="errorMessage" class="alert alert-danger">
-              {{ errorMessage }}
+            <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center mb-4">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <div>{{ errorMessage }}</div>
             </div>
             
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -81,7 +18,7 @@
                 <label for="email" class="form-label">Email</label>
                 <div class="input-group">
                   <span class="input-group-text">
-                    <i class="cil-user"></i>
+                    <i class="bi bi-envelope"></i>
                   </span>
                   <input
                     type="email"
@@ -90,6 +27,7 @@
                     class="form-control"
                     [ngClass]="{'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}"
                     placeholder="name@example.com"
+                    autocomplete="email"
                   >
                   <div class="invalid-feedback" *ngIf="loginForm.get('email')?.errors?.['required'] && loginForm.get('email')?.touched">
                     Email is required
@@ -100,11 +38,11 @@
                 </div>
               </div>
               
-              <div class="mb-4">
+              <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <div class="input-group">
                   <span class="input-group-text">
-                    <i class="cil-lock-locked"></i>
+                    <i class="bi bi-lock"></i>
                   </span>
                   <input
                     type="password"
@@ -113,6 +51,7 @@
                     class="form-control"
                     [ngClass]="{'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched}"
                     placeholder="Password"
+                    autocomplete="current-password"
                   >
                   <div class="invalid-feedback" *ngIf="loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched">
                     Password is required
@@ -121,26 +60,25 @@
               </div>
               
               <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+                <input class="form-check-input" type="checkbox" id="rememberMe">
                 <label class="form-check-label" for="rememberMe">
                   Remember me
                 </label>
               </div>
               
-              <div class="d-grid">
+              <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-primary btn-lg" [disabled]="loginForm.invalid || isLoading">
-                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                  Sign In
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <span>Sign In</span>
                 </button>
               </div>
             </form>
           </div>
-        </div>
-        
-        <div class="card text-center">
-          <div class="card-body">
-            <p class="mb-0">Don't have an account? <a routerLink="/register">Sign up</a></p>
-            <p class="mt-2"><a routerLink="/forgot-password">Forgot your password?</a></p>
+          <div class="card-footer text-center py-3">
+            <div class="small">
+              <p class="mb-0">Don't have an account? <a routerLink="/register" class="text-decoration-none">Sign up</a></p>
+              <p class="mt-2"><a routerLink="/forgot-password" class="text-decoration-none">Forgot your password?</a></p>
+            </div>
           </div>
         </div>
       </div>
