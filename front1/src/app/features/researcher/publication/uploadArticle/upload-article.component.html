@@ -1,0 +1,201 @@
+<div class="c-app">
+    <!-- Sidebar -->
+    <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+      <div class="c-sidebar-brand">
+        <span class="h5 mb-0">Research Hub</span>
+      </div>
+      <ul class="c-sidebar-nav ps-0">
+        <!-- Main Navigation Section -->
+        <li class="c-sidebar-nav-title">MAIN</li>
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" routerLink="/researcher/dashboard" routerLinkActive="c-active">
+            <i class="c-sidebar-nav-icon cil-speedometer"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" routerLink="/researcher/profile" routerLinkActive="c-active">
+            <i class="c-sidebar-nav-icon cil-user"></i>
+            My Profile
+          </a>
+        </li>
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" routerLink="/researcher/publications" routerLinkActive="c-active">
+            <i class="c-sidebar-nav-icon cil-book"></i>
+            My articles
+          </a>
+        </li>
+        
+        <!-- Research Section -->
+        <li class="c-sidebar-nav-title mt-3">RESEARCH</li>
+        
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" routerLink="/researcher/events" routerLinkActive="c-active">
+            <i class="c-sidebar-nav-icon cil-calendar"></i>
+            Events
+          </a>
+        </li>
+        <li class="c-sidebar-nav-item">
+          <a class="c-sidebar-nav-link" routerLink="/researcher/bookmarks" routerLinkActive="c-active">
+            <i class="c-sidebar-nav-icon cil-bookmark"></i>
+            Bookmarks
+          </a>
+        </li>
+      </ul>
+    </div>
+       
+    <!-- Main content -->
+    <div class="c-wrapper">
+      <!-- Header -->
+      <header class="c-header c-header-light c-header-fixed">
+        <button class="c-header-toggler c-class-toggler d-lg-none" type="button" (click)="toggleSidebar()">
+          <i class="cil-menu"></i>
+        </button>
+        
+        <!-- Search bar -->
+        <div class="c-header-search mx-3 flex-grow-1">
+          <input class="form-control" type="search" placeholder="Search publications, authors..." aria-label="Search">
+        </div>
+        
+        <ul class="c-header-nav ml-auto">
+          <!-- Notifications -->
+          <li class="c-header-nav-item px-2">
+            <a class="c-header-nav-link" href="#">
+              <i class="cil-bell"></i>
+              <span class="badge badge-pill badge-danger">3</span>
+            </a>
+          </li>
+          
+          <!-- Messages -->
+          <li class="c-header-nav-item px-2">
+            <a class="c-header-nav-link" href="#">
+              <i class="cil-envelope-open"></i>
+              <span class="badge badge-pill badge-info">5</span>
+            </a>
+          </li>
+          
+          <!-- User profile -->
+          <li class="c-header-nav-item dropdown">
+            <a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+              <i class="cil-user"></i> Researcher
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#">
+                <i class="cil-settings"></i> Settings
+              </a>
+              <a class="dropdown-item" href="#">
+                <i class="cil-account-logout"></i> Logout
+              </a>
+            </div>
+          </li>
+        </ul>
+      </header>
+<div class="upload-article container my-5">
+    <h2 class="mb-4">Submit a New Article</h2>
+  
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+  
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+  
+    <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+      <!-- Title -->
+      <div class="form-group mb-3">
+        <label for="titre">Title*</label>
+        <input 
+          type="text" 
+          id="titre" 
+          formControlName="titre" 
+          class="form-control" 
+          placeholder="Enter the article title"
+          [ngClass]="{'is-invalid': articleForm.get('titre')?.invalid && articleForm.get('titre')?.touched}">
+        <div class="invalid-feedback" *ngIf="articleForm.get('titre')?.invalid && articleForm.get('titre')?.touched">
+          Title is required.
+        </div>
+      </div>
+  
+      <!-- DOI -->
+      <div class="form-group mb-3">
+        <label for="doi">DOI*</label>
+        <input 
+          type="text" 
+          id="doi" 
+          formControlName="doi" 
+          class="form-control" 
+          placeholder="10.xxxx/abc123"
+          [ngClass]="{'is-invalid': articleForm.get('doi')?.invalid && articleForm.get('doi')?.touched}">
+        <div class="invalid-feedback" *ngIf="articleForm.get('doi')?.invalid && articleForm.get('doi')?.touched">
+          DOI is required.
+        </div>
+      </div>
+  
+      <!-- Keywords -->
+      <div class="form-group mb-3">
+        <label for="keyword">Keywords*</label>
+        <input 
+          type="text" 
+          id="keyword" 
+          formControlName="keyword" 
+          class="form-control" 
+          placeholder="e.g. machine learning, artificial intelligence, data science"
+          [ngClass]="{'is-invalid': articleForm.get('keyword')?.invalid && articleForm.get('keyword')?.touched}">
+        <div class="invalid-feedback" *ngIf="articleForm.get('keyword')?.invalid && articleForm.get('keyword')?.touched">
+          Keywords are required.
+        </div>
+      </div>
+  
+      <!-- Description -->
+      <div class="form-group mb-3">
+        <label for="description">Description*</label>
+        <textarea 
+          id="description" 
+          formControlName="description" 
+          class="form-control" 
+          rows="5" 
+          placeholder="Enter a detailed description of your article"
+          [ngClass]="{'is-invalid': articleForm.get('description')?.invalid && articleForm.get('description')?.touched}">
+        </textarea>
+        <div class="invalid-feedback" *ngIf="articleForm.get('description')?.invalid && articleForm.get('description')?.touched">
+          <span *ngIf="articleForm.get('description')?.errors?.['required']">Description is required.</span>
+          <span *ngIf="articleForm.get('description')?.errors?.['maxlength']">Description cannot exceed 2000 characters.</span>
+        </div>
+        <small class="text-muted">Maximum 2000 characters</small>
+      </div>
+  
+      <!-- Domain (optional) -->
+      <div class="form-group mb-3">
+        <label for="domainId">Research Domain (optional)</label>
+        <select 
+          id="domainId" 
+          formControlName="domainId" 
+          class="form-select">
+          <option value="" disabled selected>Select domain</option>
+          <option *ngFor="let domain of domains" [value]="domain.id">{{ domain.nomDomaine }}</option>
+        </select>
+      </div>
+  
+      <!-- File Upload -->
+      <div class="form-group mb-4">
+        <label for="pdfUpload">Upload PDF</label>
+        <input 
+          type="file" 
+          id="pdfUpload" 
+          class="form-control" 
+          accept=".pdf,.doc,.docx"
+          (change)="onFileSelected($event)">
+        <small class="text-muted">Upload the full article in PDF or document format</small>
+      </div>
+  
+      <!-- Buttons -->
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-secondary me-2" (click)="cancel()" [disabled]="isSubmitting">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting || articleForm.invalid">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>

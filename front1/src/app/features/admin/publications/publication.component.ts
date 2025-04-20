@@ -30,7 +30,7 @@ import { PublicationService, Article, Domain, ContributionDTO } from './publicat
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   styleUrls: ['./publication.component.scss']
 })
-export class PublicationComponent implements OnInit {
+export class AdminPublicationComponent implements OnInit {
   articles: Article[] = [];
   filteredArticles: Article[] = [];
   loading: boolean = true;

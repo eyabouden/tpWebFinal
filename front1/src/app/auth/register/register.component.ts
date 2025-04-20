@@ -43,32 +43,29 @@ export class RegisterComponent {
   }
 
   onSubmit(): void {
-    if (this.registerForm.invalid) {
-      return;
-    }
-
+    if (this.registerForm.invalid) return;
+  
     this.isLoading = true;
     this.errorMessage = '';
-    this.successMessage = '';
-
-    // Extract registration data (excluding confirmPassword)
-    const { confirmPassword, ...registrationData } = this.registerForm.value;
-
-    this.authService.register(registrationData)
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.successMessage = 'Registration successful! Redirecting to login...';
-          
-          // Redirect to login page after a delay
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = error.error || 'Registration failed. Please try again.';
-        }
-      });
+  
+    this.authService.register(this.registerForm.value).subscribe({
+      next: () => {
+        this.router.navigate(['/auth/login']);
+      },
+      error: (error: Error) => {  // Type the error parameter
+        this.isLoading = false;
+        
+        // Handle both Error objects and string error messages
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        
+        this.errorMessage = errorMessage
+          .split('\n')
+          .map((line: string) => line.trim())
+          .filter((line: string) => line.length)
+          .join('\n');  // Rejoin with newlines if needed
+      
+        console.error('Registration error details:', error);
+      }
+    });
   }
 }

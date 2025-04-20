@@ -1,0 +1,165 @@
+<!-- researcher-dashboard.component.html -->
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Researcher Dashboard</h1>
+    <p class="subtitle">Overview of your research activities and events</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="dashboard-content">
+    <!-- Statistics Cards -->
+    <div class="statistics-section">
+      <div class="stat-card">
+        <div class="stat-header">
+          <h3>Publications</h3>
+          <i class="icon-article">📄</i>
+        </div>
+        <div class="stat-content">
+          <h2>{{ articleCount }}</h2>
+          <p>Total research publications</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <h3>Organized Events</h3>
+          <i class="icon-event">📅</i>
+        </div>
+        <div class="stat-content">
+          <h2>{{ eventsOrganizedCount }}</h2>
+          <p>Events you organized</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <h3>Participated Events</h3>
+          <i class="icon-group">👥</i>
+        </div>
+        <div class="stat-content">
+          <h2>{{ eventsParticipatedCount }}</h2>
+          <p>Events you attended</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity Feed -->
+    <div class="activity-feed">
+      <h2 class="section-title">Recent Activity</h2>
+      
+      <!-- Custom tabs -->
+      <div class="custom-tabs">
+        <div class="tab-headers">
+          <button 
+            [class.active]="activeTab === 'publications'" 
+            (click)="setActiveTab('publications')" 
+            class="tab-button">
+            Publications
+          </button>
+          <button 
+            [class.active]="activeTab === 'organized'" 
+            (click)="setActiveTab('organized')" 
+            class="tab-button">
+            Organized Events
+          </button>
+          <button 
+            [class.active]="activeTab === 'participated'" 
+            (click)="setActiveTab('participated')" 
+            class="tab-button">
+            Participated Events
+          </button>
+        </div>
+        
+        <!-- Tab content -->
+        <div class="tab-content">
+          <!-- Publications Tab -->
+          <div *ngIf="activeTab === 'publications'" class="feed-list">
+            <div *ngFor="let article of recentArticles" class="feed-item">
+              <div class="feed-item-content">
+                <i class="icon-feed">📄</i>
+                <div>
+                  <h3>{{ article.titre }}</h3>
+                  <p class="meta-info">
+                    <span>Status: {{ article.status }}</span>
+                    <span *ngIf="article.domain">Domain: {{ article.domain.nomDomaine }}</span>
+                  </p>
+                </div>
+              </div>
+              <!--<a class="btn-primary" [routerLink]="['/publications', article.id]">View Details</a>-->
+            </div>
+            
+            <div *ngIf="recentArticles.length === 0" class="empty-state">
+              <i class="icon-info">ℹ️</i>
+              <p>No publications found</p>
+              <a class="btn-primary" routerLink="/publications/new">
+                <span>+</span> Create Publication
+              </a>
+            </div>
+          </div>
+          
+          <!-- Organized Events Tab -->
+          <div *ngIf="activeTab === 'organized'" class="feed-list">
+            <div *ngFor="let event of organizedEvents" class="feed-item">
+              <div class="feed-item-content">
+                <i class="icon-feed">📅</i>
+                <div>
+                  <h3>{{ event.title }}</h3>
+                  <p class="meta-info">
+                    <span>Date: {{ formatDate(event.startDate) }} - {{ formatDate(event.endDate) }}</span>
+                    <span>Location: {{ event.location || 'Online' }}</span>
+                    <span>Status: {{ getEventStatus(event) }}</span>
+                    <span>Participants: {{ event.participants.length || 0 }}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="feed-item-actions">
+                <!--<a class="btn-primary" [routerLink]="['/events', event.id]">View</a>-->
+                <button class="btn-secondary" (click)="editEvent(event.id)">
+                  <span>✏️</span> Edit
+                </button>
+              </div>
+            </div>
+            
+            <div *ngIf="organizedEvents.length === 0" class="empty-state">
+              <i class="icon-info">ℹ️</i>
+              <p>You haven't organized any events yet</p>
+              <a class="btn-primary" routerLink="/events/new">
+                <span>+</span> Create Event
+              </a>
+            </div>
+          </div>
+
+          <!-- Participated Events Tab -->
+          <div *ngIf="activeTab === 'participated'" class="feed-list">
+            <div *ngFor="let event of participatedEvents" class="feed-item">
+              <div class="feed-item-content">
+                <i class="icon-feed">⭐</i>
+                <div>
+                  <h3>{{ event.title }}</h3>
+                  <p class="meta-info">
+                    <span>Date: {{ formatDate(event.startDate) }} - {{ formatDate(event.endDate) }}</span>
+                    <span>Organizer: {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</span>
+                    <span>Status: {{ getEventStatus(event) }}</span>
+                  </p>
+                </div>
+              </div>
+              <!--<a class="btn-primary" [routerLink]="['/events', event.id]">View Details</a>-->
+            </div>
+            
+            <div *ngIf="participatedEvents.length === 0" class="empty-state">
+              <i class="icon-info">ℹ️</i>
+              <p>You haven't participated in any events yet</p>
+              <a class="btn-primary" routerLink="/events">
+                <span>🔍</span> Browse Events
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
