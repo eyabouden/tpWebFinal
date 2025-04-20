@@ -25,6 +25,7 @@ import { PublicationComponent } from './features/admin/publications/publication.
 //import { ResearchersComponent } from './features/admin/researchers/researchers-management.component';
 import { DomainComponent } from './features/admin/domaine/domaine.component';
 import { ResearchersComponent } from './features/admin/researchers/researchers-management.component';
+import { ResearcherEventDetailComponent } from './features/researcher/event/event-detail/event-detail.component';
 
 export const appRoutes: Routes = [
   {
@@ -87,6 +88,12 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./features/researcher/bookmark/bookmark.component').then(m => m.BookmarkComponent)
       },
+      {
+        path: 'events',
+        loadComponent: () =>
+          import('./features/researcher/event/event.component').then(m => m.ResearcherEventComponent),
+        
+      },
   
       // ✅ Add profile route here
       
@@ -96,15 +103,30 @@ export const appRoutes: Routes = [
   },
   
   
-  //{ path: 'researcher/profile', component: ProfileComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'dashboard/admin', component: AdminDashboardComponent },
-  { path: 'art', component: UploadArticleComponent },
   { path: 'dashboard/event', component: EventComponent },
   { path: 'dashboard/event/detail', component: EventDetailComponent },
   { path: 'dashboard/admin/users', component: ResearchersComponent },
   { path: 'dashboard/admin/domaine', component: DomainComponent },
   { path: 'dashboard/admin/searcher', component: ResearchersComponent },
-  //{ path: 'dashboard/admin/searcher/publication', component: PublicationComponent },
+  { path: 'dashboard/admin/searcher/publication', component: PublicationComponent },
+  //{ path: 'dashboard/moderateur', component: ModerateurDashboardComponent },
   { path: 'dashboard/utilisateur', component: UtilisateurDashboardComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
+  {
+    path: 'researcher/events/create',
+    component: ResearcherEventDetailComponent
+  },
+  {
+    path: 'view/:id',
+    component: ResearcherEventDetailComponent,
+    data: { mode: 'view' }
+  },
+  {
+    path: 'edit/:id',
+    component: ResearcherEventDetailComponent,
+    data: { mode: 'edit' }
+  },
 ];

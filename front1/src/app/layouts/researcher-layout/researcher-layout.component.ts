@@ -1,4 +1,3 @@
-// researcher-layout.component.ts
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -43,14 +42,9 @@ export class ResearcherLayoutComponent {
       route: '/researcher/domains'
     },
     {
-      title: 'Collaborations',
-      icon: 'cil-people',
-      route: '/researcher/collaborations'
-    },
-    {
-      title: 'Analytics',
-      icon: 'cil-chart',
-      route: '/researcher/analytics'
+      title: 'Events',
+      icon: 'cil-calendar',
+      route: '/researcher/events'
     },
     {
       title: 'Profile',

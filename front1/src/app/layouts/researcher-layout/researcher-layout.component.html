@@ -1,117 +1,103 @@
 <div class="c-app">
-    <!-- Sidebar -->
-    <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
-      <div class="c-sidebar-brand">
-        <span class="h5 mb-0">Research Hub</span>
+  <!-- Sidebar -->
+  <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+    <div class="c-sidebar-brand">
+      <span class="h5 mb-0">Research Hub</span>
+    </div>
+    <ul class="c-sidebar-nav ps-0">
+      <!-- Main Navigation Section -->
+      <li class="c-sidebar-nav-title">MAIN</li>
+      <li class="c-sidebar-nav-item">
+        <a class="c-sidebar-nav-link" routerLink="/researcher/dashboard" routerLinkActive="c-active">
+          <i class="c-sidebar-nav-icon cil-speedometer"></i>
+          Dashboard
+        </a>
+      </li>
+      <li class="c-sidebar-nav-item">
+        <a class="c-sidebar-nav-link" routerLink="/researcher/profile" routerLinkActive="c-active">
+          <i class="c-sidebar-nav-icon cil-user"></i>
+          My Profile
+        </a>
+      </li>
+      <li class="c-sidebar-nav-item">
+        <a class="c-sidebar-nav-link" routerLink="/researcher/publications" routerLinkActive="c-active">
+          <i class="c-sidebar-nav-icon cil-book"></i>
+          My articles
+        </a>
+      </li>
+      
+      <!-- Research Section -->
+      <li class="c-sidebar-nav-title mt-3">RESEARCH</li>
+      
+      <li class="c-sidebar-nav-item">
+        <a class="c-sidebar-nav-link" routerLink="/researcher/events" routerLinkActive="c-active">
+          <i class="c-sidebar-nav-icon cil-calendar"></i>
+          Events
+        </a>
+      </li>
+      <li class="c-sidebar-nav-item">
+        <a class="c-sidebar-nav-link" routerLink="/researcher/bookmarks" routerLinkActive="c-active">
+          <i class="c-sidebar-nav-icon cil-bookmark"></i>
+          Bookmarks
+        </a>
+      </li>
+    </ul>
+  </div>
+     
+  <!-- Main content -->
+  <div class="c-wrapper">
+    <!-- Header -->
+    <header class="c-header c-header-light c-header-fixed">
+      <button class="c-header-toggler c-class-toggler d-lg-none" type="button" (click)="toggleSidebar()">
+        <i class="cil-menu"></i>
+      </button>
+      
+      <!-- Search bar -->
+      <div class="c-header-search mx-3 flex-grow-1">
+        <input class="form-control" type="search" placeholder="Search publications, authors..." aria-label="Search">
       </div>
-      <ul class="c-sidebar-nav ps-0">
-        <!-- Main Navigation Section -->
-        <li class="c-sidebar-nav-title">MAIN</li>
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" routerLink="/researcher/dashboard" routerLinkActive="c-active">
-            <i class="c-sidebar-nav-icon cil-speedometer"></i>
-            Dashboard
-          </a>
-        </li>
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" routerLink="/researcher/profile" routerLinkActive="c-active">
-            <i class="c-sidebar-nav-icon cil-user"></i>
-            My Profile
-          </a>
-        </li>
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" routerLink="/researcher/publications" routerLinkActive="c-active">
-            <i class="c-sidebar-nav-icon cil-book"></i>
-            My articles
+      
+      <ul class="c-header-nav ml-auto">
+        <!-- Notifications -->
+        <li class="c-header-nav-item px-2">
+          <a class="c-header-nav-link" href="#">
+            <i class="cil-bell"></i>
+            <span class="badge badge-pill badge-danger">3</span>
           </a>
         </li>
         
-        <!-- Research Section -->
-        <li class="c-sidebar-nav-title mt-3">RESEARCH</li>
-        
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" routerLink="/researcher/browse" routerLinkActive="c-active">
-            <i class="c-sidebar-nav-icon cil-magnifying-glass"></i>
-            Browse Research
-          </a>
-        </li>
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" routerLink="/researcher/analytics" routerLinkActive="c-active">
-            <i class="c-sidebar-nav-icon cil-chart"></i>
-            Analytics
-          </a>
-        </li>
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" routerLink="/researcher/bookmarks" routerLinkActive="c-active">
-            <i class="c-sidebar-nav-icon cil-bookmark"></i>
-            Bookmarks
+        <!-- Messages -->
+        <li class="c-header-nav-item px-2">
+          <a class="c-header-nav-link" href="#">
+            <i class="cil-envelope-open"></i>
+            <span class="badge badge-pill badge-info">5</span>
           </a>
         </li>
         
-        <!-- Network Section -->
-        <li class="c-sidebar-nav-title mt-3">NETWORK</li>
-        <li class="c-sidebar-nav-item">
-          <a class="c-sidebar-nav-link" routerLink="/researcher/collaborators" routerLinkActive="c-active">
-            <i class="c-sidebar-nav-icon cil-people"></i>
-            Collaborators
+        <!-- User profile -->
+        <li class="c-header-nav-item dropdown">
+          <a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="cil-user"></i> Researcher
           </a>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" href="#">
+              <i class="cil-settings"></i> Settings
+            </a>
+            <a class="dropdown-item" href="#">
+              <i class="cil-account-logout"></i> Logout
+            </a>
+          </div>
         </li>
       </ul>
-    </div>
+    </header>
        
-    <!-- Main content -->
-    <div class="c-wrapper">
-      <!-- Header -->
-      <header class="c-header c-header-light c-header-fixed">
-        <button class="c-header-toggler c-class-toggler d-lg-none" type="button" (click)="toggleSidebar()">
-          <i class="cil-menu"></i>
-        </button>
-        
-        <!-- Search bar -->
-        <div class="c-header-search mx-3 flex-grow-1">
-          <input class="form-control" type="search" placeholder="Search publications, authors..." aria-label="Search">
+    <!-- Page content - IMPORTANT: Added padding-top to fix content being hidden -->
+    <div class="c-body">
+      <main class="c-main pt-5">
+        <div class="container-fluid px-4 py-4">
+          <router-outlet></router-outlet>
         </div>
-        
-        <ul class="c-header-nav ml-auto">
-          <!-- Notifications -->
-          <li class="c-header-nav-item px-2">
-            <a class="c-header-nav-link" href="#">
-              <i class="cil-bell"></i>
-              <span class="badge badge-pill badge-danger">3</span>
-            </a>
-          </li>
-          
-          <!-- Messages -->
-          <li class="c-header-nav-item px-2">
-            <a class="c-header-nav-link" href="#">
-              <i class="cil-envelope-open"></i>
-              <span class="badge badge-pill badge-info">5</span>
-            </a>
-          </li>
-          
-          <!-- User profile -->
-          <li class="c-header-nav-item dropdown">
-            <a class="c-header-nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-              <i class="cil-user"></i> Researcher
-            </a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="#">
-                <i class="cil-settings"></i> Settings
-              </a>
-              <a class="dropdown-item" href="#">
-                <i class="cil-account-logout"></i> Logout
-              </a>
-            </div>
-          </li></ul>
-      </header>
-         
-      <!-- Page content - IMPORTANT: Added padding-top to fix content being hidden -->
-      <div class="c-body">
-        <main class="c-main pt-5">
-          <div class="container-fluid px-4 py-4">
-            <router-outlet></router-outlet>
-          </div>
-        </main>
-      </div>
+      </main>
     </div>
   </div>
+</div>

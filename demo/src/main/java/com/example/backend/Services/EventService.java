@@ -1,18 +1,17 @@
 package com.example.backend.Services;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.example.backend.Dto.CreateEventDTO;
 import com.example.backend.Dto.UpdateEventDTO;
 import com.example.backend.Entities.Event;
 import com.example.backend.Entities.User;
 import com.example.backend.Repositories.EventRepository;
 import com.example.backend.Repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class EventService {

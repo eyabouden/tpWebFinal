@@ -5,13 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.example.backend.Dto.UserUpdateRequest;
-import com.example.backend.Entities.Event;
-import com.example.backend.Entities.User;
 import com.example.backend.Enum.Role;
-import com.example.backend.Repositories.EventRepository;
+import com.example.backend.Dto.UserUpdateRequest;
+import com.example.backend.Entities.User;
+import com.example.backend.Entities.Event;
 import com.example.backend.Repositories.UserRepository;
+import com.example.backend.Repositories.EventRepository;
 
 @Service
 public class UserService {

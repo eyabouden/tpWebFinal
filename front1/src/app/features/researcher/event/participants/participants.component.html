@@ -1,0 +1,130 @@
+<!-- Participants Modal -->
+<div class="modal fade" id="participantsModal" tabindex="-1" aria-labelledby="participantsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="participantsModalLabel">
+            <i class="bi bi-people-fill me-2"></i>
+            Participants: {{ selectedEvent?.title }}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Current participants list -->
+          <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span>Participants ({{ selectedEvent?.participants?.length || 0 }})</span>
+              <button class="btn btn-sm btn-primary" (click)="openAddParticipantForm()">
+                <i class="bi bi-person-plus me-1"></i> Ajouter un participant
+              </button>
+            </div>
+            <div class="card-body p-0">
+              <div *ngIf="!selectedEvent?.participants?.length" class="text-center p-3">
+                <p class="text-muted">Aucun participant pour cet événement</p>
+              </div>
+              <ul class="list-group list-group-flush" *ngIf="selectedEvent?.participants?.length">
+                <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let participant of selectedEvent?.participants">
+                  <div class="d-flex align-items-center">
+                    <div class="participant-avatar me-3">
+                      {{ getInitials(participant) }}
+                    </div>
+                    <div>
+                      <strong>{{ participant.firstName }} {{ participant.lastName }}</strong>
+                      <br>
+                      <small>{{ participant.email }}</small>
+                      <span class="badge ms-2" [ngClass]="getRoleBadgeClass(participant.role)">{{ participant.role }}</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-danger" (click)="confirmRemoveParticipant(participant)">
+                    <i class="bi bi-person-x"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Add participant form (initially hidden) -->
+          <div *ngIf="showAddParticipantForm" class="card">
+            <div class="card-header">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>Ajouter un participant</span>
+                <button class="btn btn-sm btn-outline-secondary" (click)="cancelAddParticipant()">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="userSearch" class="form-label">Rechercher un utilisateur</label>
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="userSearch" 
+                    [(ngModel)]="userSearchTerm" 
+                    (keyup)="searchUsers()"
+                    placeholder="Nom, prénom ou email">
+                  <button class="btn btn-outline-primary" type="button" (click)="searchUsers()">
+                    <i class="bi bi-search"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div *ngIf="searchingUsers" class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Chargement...</span>
+                </div>
+              </div>
+              
+              <div *ngIf="!searchingUsers && filteredUsers.length === 0 && userSearchTerm" class="alert alert-info">
+                Aucun utilisateur trouvé.
+              </div>
+              
+              <ul class="list-group" *ngIf="!searchingUsers && filteredUsers.length > 0">
+                <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let user of filteredUsers">
+                  <div class="d-flex align-items-center">
+                    <div class="participant-avatar me-3">
+                      {{ getInitials(user) }}
+                    </div>
+                    <div>
+                      <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                      <br>
+                      <small>{{ user.email }}</small>
+                      <span class="badge ms-2" [ngClass]="getRoleBadgeClass(user.role)">{{ user.role }}</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-success" (click)="addParticipant(user)" [disabled]="isUserAlreadyParticipant(user)">
+                    <i class="bi bi-person-plus"></i>
+                    <span *ngIf="isUserAlreadyParticipant(user)">Déjà ajouté</span>
+                    <span *ngIf="!isUserAlreadyParticipant(user)">Ajouter</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Confirmation Modal for Remove Participant -->
+  <div class="modal fade" id="removeParticipantModal" tabindex="-1" aria-labelledby="removeParticipantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="removeParticipantModalLabel">Confirmer la suppression</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Êtes-vous sûr de vouloir retirer <strong>{{ selectedParticipant?.firstName }} {{ selectedParticipant?.lastName }}</strong> de cet événement ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-danger" (click)="removeParticipant(selectedParticipant)">Confirmer</button>
+        </div>
+      </div>
+    </div>
+  </div>

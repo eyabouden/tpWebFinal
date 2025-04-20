@@ -1,0 +1,328 @@
+
+  <!-- events.component.html -->
+  <!-- events.component.html -->
+  <div class="page-content p-4">
+  <div class="page-title mb-4">
+    <h1 class="mb-2">Événements</h1>
+    <c-breadcrumb>
+      <c-breadcrumb-item>Dashboard</c-breadcrumb-item>
+      <c-breadcrumb-item active>Événements</c-breadcrumb-item>
+    </c-breadcrumb>
+  </div>
+  
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <div class="input-group shadow-sm">
+        <input type="text" class="form-control" [(ngModel)]="searchTerm" placeholder="Rechercher des événements..." 
+               (keyup.enter)="searchEvents()">
+        <button class="btn btn-primary" type="button" (click)="searchEvents()">
+          <i class="bi bi-search me-1"></i> Rechercher
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-success shadow-sm" (click)="openCreateEventModal()">
+        <i class="bi bi-plus-circle me-1"></i> Nouvel Événement
+      </button>
+    </div>
+  </div>
+  
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <c-card class="shadow-sm border-0">
+        <c-card-header class="d-flex justify-content-between align-items-center bg-white">
+          <h5 class="mb-0 text-primary"><i class="bi bi-calendar-event me-2"></i>Liste des Événements</h5>
+          <div class="btn-group shadow-sm">
+            <button class="btn btn-outline-primary btn-sm" [class.active]="currentFilter === 'all'" (click)="filterEvents('all')">
+              <i class="bi bi-grid me-1"></i> Tous
+            </button>
+            <button class="btn btn-outline-primary btn-sm" [class.active]="currentFilter === 'upcoming'" (click)="filterEvents('upcoming')">
+              <i class="bi bi-calendar-plus me-1"></i> À venir
+            </button>
+            <button class="btn btn-outline-primary btn-sm" [class.active]="currentFilter === 'ongoing'" (click)="filterEvents('ongoing')">
+              <i class="bi bi-calendar-check me-1"></i> En cours
+            </button>
+            <button class="btn btn-outline-primary btn-sm" [class.active]="currentFilter === 'completed'" (click)="filterEvents('completed')">
+              <i class="bi bi-calendar-x me-1"></i> Terminés
+            </button>
+          </div>
+        </c-card-header>
+        <c-card-body>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Titre</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Lieu</th>
+                  <th>Statut</th>
+                  <th>Participants</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="!loading; else loadingTemplate">
+                <tr *ngFor="let event of filteredEvents" class="event-row">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div [ngClass]="getEventIconClass(event.eventType)" class="event-type-icon me-3">
+                        <i [ngClass]="getEventTypeIcon(event.eventType)"></i>
+                      </div>
+                      <div>
+                        <div class="fw-bold event-title">{{ event.title }}</div>
+                        <div class="text-muted small">{{ truncateText(event.description, 40) }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill" [ngClass]="getEventTypeBadgeClass(event.eventType)">
+                      {{ event.eventType }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="event-date">{{ formatDate(event.startDate) }}</div>
+                    <div class="text-muted small">{{ formatTime(event.startDate) }} - {{ formatTime(event.endDate) }}</div>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-geo-alt-fill me-1 text-secondary"></i>
+                      {{ event.location }}
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill" [ngClass]="getStatusBadgeClass(event.status)">
+                      <i class="bi" 
+                        [ngClass]="{
+                          'bi-hourglass-split': event.status === 'UPCOMING',
+                          'bi-play-fill': event.status === 'ONGOING',
+                          'bi-check-circle-fill': event.status === 'COMPLETED',
+                          'bi-x-circle-fill': event.status === 'CANCELLED'
+                        }"></i>
+                      {{ event.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="participant-avatars">
+                        <ng-container *ngFor="let participant of event.participants.slice(0, 3); let i = index">
+                          <div class="participant-avatar" [ngStyle]="{'z-index': 10-i}" title="{{participant.firstName}} {{participant.lastName}}">
+                            {{ getInitials(participant) }}
+                          </div>
+                        </ng-container>
+                        <div *ngIf="event.participants.length > 3" class="participant-avatar more">
+                          +{{ event.participants.length - 3 }}
+                        </div>
+                      </div>
+                      <button class="btn btn-sm btn-outline-primary rounded-pill ms-2" (click)="viewParticipants(event)">
+                        <i class="bi bi-eye me-1"></i> Voir
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="btn-group">
+                      <button class="btn btn-sm btn-outline-primary" (click)="editEvent(event)" title="Modifier">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(event)" title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-info" (click)="viewEvent(event)" title="view">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
+                  </td> 
+                </tr>
+                <tr *ngIf="filteredEvents.length === 0">
+                  <td colspan="7" class="text-center py-5">
+                    <div class="empty-state">
+                      <i class="bi bi-calendar-x empty-icon"></i>
+                      <h5>Aucun événement trouvé</h5>
+                      <p>Aucun événement ne correspond à vos critères de recherche</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <ng-template #loadingTemplate>
+                <tbody>
+                  <tr>
+                    <td colspan="7" class="text-center py-5">
+                      <c-spinner color="primary"></c-spinner>
+                      <p class="mt-3">Chargement des événements en cours...</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </ng-template>
+            </table>
+          </div>
+        </c-card-body>
+
+        <c-card-footer class="bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              Affichage de <span class="fw-bold">{{ filteredEvents.length }}</span> sur <span class="fw-bold">{{ events.length }}</span> événements
+            </div>
+            <nav aria-label="Event pagination">
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item">
+                  <a class="page-link" href="javascript:void(0)"><i class="bi bi-chevron-left"></i></a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="javascript:void(0)">1</a></li>
+                <li class="page-item"><a class="page-link" href="javascript:void(0)">2</a></li>
+                <li class="page-item"><a class="page-link" href="javascript:void(0)">3</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="javascript:void(0)"><i class="bi bi-chevron-right"></i></a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </c-card-footer>
+      </c-card>
+    </div>
+  </div>
+  
+  <!-- Participants Modal -->
+  <div class="modal fade" id="participantsModal" tabindex="-1" aria-labelledby="participantsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="participantsModalLabel">
+            <i class="bi bi-people-fill me-2"></i>Participants - {{ selectedEvent?.title }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let participant of selectedEvent?.participants">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="participant-avatar me-2">{{ getInitials(participant) }}</div>
+                      <div>{{ participant.firstName }} {{ participant.lastName }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-envelope-fill me-2 text-muted"></i>
+                      {{ participant.email }}
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill" [ngClass]="getRoleBadgeClass(participant.role)">
+                      {{ participant.role }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill" (click)="removeParticipant(participant)">
+                      <i class="bi bi-person-x me-1"></i> Retirer
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="selectedEvent?.participants?.length === 0">
+                  <td colspan="4" class="text-center py-4">
+                    <div class="empty-state">
+                      <i class="bi bi-people-fill empty-icon"></i>
+                      <p>Aucun participant pour cet événement</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Add Participant Form - Correctly positioned inside the modal body -->
+          <div *ngIf="showAddParticipantForm" class="mt-4 border-top pt-3">
+            <h6 class="mb-3"><i class="bi bi-person-plus-fill me-2"></i>Ajouter un participant</h6>
+            
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Rechercher par nom ou email..." 
+                [(ngModel)]="userSearchTerm"
+                (input)="searchUsers()">
+              <button class="btn btn-outline-secondary" type="button" (click)="searchUsers()">
+                Rechercher
+              </button>
+            </div>
+            
+            <div *ngIf="searchingUsers" class="text-center py-3">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <span class="ms-2">Recherche en cours...</span>
+            </div>
+            
+            <div *ngIf="filteredUsers.length > 0" class="list-group mt-2">
+              <button 
+                *ngFor="let user of filteredUsers" 
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                [class.disabled]="isUserAlreadyParticipant(user)"
+                (click)="!isUserAlreadyParticipant(user) && addParticipant(user)">
+                <div>
+                  <div class="fw-bold">{{ user.firstName }} {{ user.lastName }}</div>
+                  <small>{{ user.email }}</small>
+                </div>
+                <span *ngIf="isUserAlreadyParticipant(user)" class="badge bg-secondary">Déjà participant</span>
+                <span *ngIf="!isUserAlreadyParticipant(user)" class="badge bg-primary">Ajouter</span>
+              </button>
+            </div>
+            
+            <div *ngIf="userSearchTerm && filteredUsers.length === 0 && !searchingUsers" class="text-center py-3">
+              <p class="text-muted">Aucun utilisateur trouvé</p>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+              <button type="button" class="btn btn-secondary" (click)="cancelAddParticipant()">
+                <i class="bi bi-x me-1"></i> Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-1"></i> Fermer
+          </button>
+          <button type="button" class="btn btn-primary" (click)="openAddParticipantForm()">
+            <i class="bi bi-person-plus me-1"></i> Add Participant
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmation de suppression</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-4">
+            <i class="bi bi-trash-fill text-danger" style="font-size: 3rem;"></i>
+          </div>
+          <p class="text-center">Êtes-vous sûr de vouloir supprimer l'événement <strong>{{ selectedEvent?.title }}</strong> ?</p>
+          <p class="text-danger text-center fw-bold">Cette action est irréversible.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-1"></i> Annuler
+          </button>
+          <button type="button" class="btn btn-danger" (click)="deleteEvent()">
+            <i class="bi bi-trash me-1"></i> Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
