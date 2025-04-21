@@ -81,6 +81,56 @@ public class StatisticsController {
         return ResponseEntity.ok(stats);
     }
     
+    /**
+    * Get count of articles created by a specific user
+    */
+   @GetMapping("/user/{userId}/articles-count")
+   public ResponseEntity<Long> getArticleCountByUser(@PathVariable Long userId) {
+       try {
+           Long count = statisticsService.getArticleCountByUser(userId);
+           return ResponseEntity.ok(count);
+       } catch (RuntimeException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+       }
+   }
    
+   /**
+    * Get count of events created by a specific user
+    */
+   @GetMapping("/user/{userId}/events-count")
+   public ResponseEntity<Long> getEventCountByUser(@PathVariable Long userId) {
+       try {
+           Long count = statisticsService.getEventCountByUser(userId);
+           return ResponseEntity.ok(count);
+       } catch (RuntimeException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+       }
+   }
+   
+   /**
+    * Get count of events a user has attended as a participant
+    */
+   @GetMapping("/user/{userId}/events-attended")
+   public ResponseEntity<Long> getEventsAttendedByUser(@PathVariable Long userId) {
+       try {
+           Long count = statisticsService.getEventsAttendedByUser(userId);
+           return ResponseEntity.ok(count);
+       } catch (RuntimeException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+       }
+   }
+   
+   /**
+    * Get comprehensive user statistics
+    */
+   @GetMapping("/user/{userId}")
+   public ResponseEntity<Map<String, Long>> getUserStatistics(@PathVariable Long userId) {
+       try {
+           Map<String, Long> stats = statisticsService.getUserStatistics(userId);
+           return ResponseEntity.ok(stats);
+       } catch (RuntimeException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+       }
+   }
   
 }

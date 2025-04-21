@@ -105,7 +105,100 @@
           <div *ngIf="error" class="alert alert-danger" role="alert">
             {{ error }}
           </div>
-    
+    <!-- Add this button above the table in the card-body -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h5 class="mb-0">{{ users.length }} {{ pageTitle }} found</h5>
+  </div>
+  <button cButton color="primary" (click)="openAddUserModal()">
+    <i class="bi bi-plus-circle me-1"></i> Add {{ roleFilter === 'MODERATEUR' ? 'Chercheur' : 'User' }}
+  </button>
+</div>
+
+<!-- Add User Modal -->
+<div *ngIf="showAddUserModal" class="modal show d-block" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add {{ roleFilter === 'MODERATEUR' ? 'Chercheur' : 'User' }}</h5>
+        <button type="button" class="btn-close" (click)="closeAddUserModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Common fields for all users -->
+          <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label">First Name:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" [(ngModel)]="newUserForm.firstName" name="firstName" required>
+            </div>
+          </div>
+          
+          <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label">Last Name:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" [(ngModel)]="newUserForm.lastName" name="lastName" required>
+            </div>
+          </div>
+          
+          <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label">Email:</label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" [(ngModel)]="newUserForm.email" name="email" required>
+            </div>
+          </div>
+          
+          <div class="mb-3 row">
+            <label class="col-sm-4 col-form-label">Password:</label>
+            <div class="col-sm-8">
+              <input type="password" class="form-control" [(ngModel)]="newUserForm.password" name="password" required>
+            </div>
+          </div>
+          
+        
+<div class="mb-3 row">
+  <label class="col-sm-4 col-form-label">Role:</label>
+  <div class="col-sm-8">
+    <select class="form-select" [(ngModel)]="newUserForm.role" name="role" (change)="onRoleChange()" required>
+      <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
+    </select>
+  </div>
+</div>
+          
+          <!-- Moderator/Researcher specific fields - show only if adding a MODERATEUR or role is set to MODERATEUR -->
+          <div *ngIf="newUserForm.role === 'MODERATEUR'" class="researcher-fields">
+            <h6 class="mt-4 mb-3 border-bottom pb-2">Chercheur Information</h6>
+            
+            <div class="mb-3 row">
+              <label class="col-sm-4 col-form-label">Employment Date:</label>
+              <div class="col-sm-8">
+                <input type="date" class="form-control" [(ngModel)]="newUserForm.employmentDate" name="employmentDate">
+              </div>
+            </div>
+            
+            <div class="mb-3 row">
+              <label class="col-sm-4 col-form-label">Institution:</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" [(ngModel)]="newUserForm.institution" name="institution">
+              </div>
+            </div>
+            
+            <div class="mb-3 row">
+              <label class="col-sm-4 col-form-label">Grade:</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" [(ngModel)]="newUserForm.grade" name="grade">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddUserModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="createUser()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="showAddUserModal" class="modal-backdrop fade show"></div>
           <!-- Users table -->
           <div *ngIf="!loading && !error && users.length">
             <table cTable striped hover>

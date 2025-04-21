@@ -34,4 +34,24 @@ export class StatisticsService {
   getArticleStatistics(articleId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/article/${articleId}`, { headers: this.getAuthHeaders() });
   }
+  getArticleCountByUser(userId: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/user/${userId}/articles-count`, { headers: this.getAuthHeaders() });
+  }
+  
+  getEventCountByUser(userId: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/user/${userId}/events-count`, { headers: this.getAuthHeaders() });
+  }
+  
+  getEventsAttendedByUser(userId: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/user/${userId}/events-attended`, { headers: this.getAuthHeaders() });
+  }
+  getUserStatistics(userId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/user/${userId}`, { headers: this.getAuthHeaders() });
+  }
+  
+  // Method to get stats for the current logged-in user
+  getCurrentUserStatistics(): Observable<any> {
+    const currentUserId = this.authService.getCurrentUserId();
+    return this.getUserStatistics(currentUserId);
+  }
 }

@@ -11,155 +11,172 @@
   </div>
 
   <div *ngIf="!isLoading" class="dashboard-content">
-    <!-- Statistics Cards -->
-    <div class="statistics-section">
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3>Publications</h3>
-          <i class="icon-article">📄</i>
+    <!-- Statistics Cards Section -->
+<div class="statistics-section">
+  <div class="stat-card">
+    <div class="stat-header">
+      <h3>Publications</h3>
+      <i class="icon-article">📄</i>
+    </div>
+    <div class="stat-content">
+      <h2>{{ articleCount }}</h2>
+      <p>Total research publications</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-header">
+      <h3>Organized Events</h3>
+      <i class="icon-event">📅</i>
+    </div>
+    <div class="stat-content">
+      <h2>{{ eventsOrganizedCount }}</h2>
+      <p>Events you organized</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-header">
+      <h3>Participated Events</h3>
+      <i class="icon-group">👥</i>
+    </div>
+    <div class="stat-content">
+      <h2>{{ eventsParticipatedCount }}</h2>
+      <p>Events you attended</p>
+    </div>
+  </div>
+</div>
+<!-- Add this after the statistics-section div in researcher-dashboard.component.html -->
+<div class="news-feed-section">
+  <h2 class="section-title">Fil d'actualité</h2>
+  
+  <div *ngIf="isLoadingFeed" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Chargement du fil d'actualité...</p>
+  </div>
+  
+  <div *ngIf="!isLoadingFeed" class="feed-wrapper">
+    <div *ngFor="let item of newsFeed" class="feed-item">
+      <!-- Article item -->
+<div *ngIf="item.type === 'article'" class="feed-item-content">
+  <i class="icon-feed">📄</i>
+  <div>
+    <h3>{{ item.data.titre }}</h3>
+    <p class="meta-info">
+      <span class="feed-item-type">Publication</span>
+      <span>Date: {{ formatDate(item.date) }}</span>
+      <span *ngIf="item.data.domain">Domain: {{ item.data.domain.nomDomaine }}</span>
+    </p>
+  </div>
+  <button class="btn-primary" (click)="openItemDetails(item, $event)">View Details</button>
+</div>
+      
+      <!-- Event item -->
+<div *ngIf="item.type === 'event'" class="feed-item-content">
+  <i class="icon-feed">📅</i>
+  <div>
+    <h3>{{ item.data.title }}</h3>
+    <p class="meta-info">
+      <span class="feed-item-type">Event</span>
+      <span>Date: {{ formatDate(item.data.startDate) }} - {{ formatDate(item.data.endDate) }}</span>
+      <span>Location: {{ item.data.location || 'Online' }}</span>
+      <span>Status: {{ getEventStatus(item.data) }}</span>
+    </p>
+  </div>
+  <button class="btn-primary" (click)="openItemDetails(item, $event)">View Details</button>
+</div>
+    
+    <div *ngIf="newsFeed.length === 0" class="empty-state">
+      <i class="icon-info">ℹ️</i>
+      <p>Aucune actualité disponible</p>
+    </div>
+  </div>
+</div>
+<!-- Add this to the end of your researcher-dashboard.component.html file -->
+
+<!-- Modal for Article Details -->
+<div class="modal" [class.active]="showModal && selectedItem" (click)="closeModal($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 *ngIf="selectedItem?.type === 'article'">{{ selectedItem?.data?.titre }}</h2>
+      <h2 *ngIf="selectedItem?.type === 'event'">{{ selectedItem?.data?.title }}</h2>
+      <button class="close-button" (click)="closeModal($event)">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Article Details -->
+      <div *ngIf="selectedItem?.type === 'article'">
+        <div class="detail-group">
+          <span class="detail-label">Status:</span>
+          <span class="detail-value">{{ selectedItem?.data?.status }}</span>
         </div>
-        <div class="stat-content">
-          <h2>{{ articleCount }}</h2>
-          <p>Total research publications</p>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.domain">
+          <span class="detail-label">Domain:</span>
+          <span class="detail-value">{{ selectedItem?.data?.domain?.nomDomaine }}</span>
+        </div>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.keyword">
+          <span class="detail-label">Keywords:</span>
+          <span class="detail-value">{{ selectedItem?.data?.keyword }}</span>
+        </div>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.doi">
+          <span class="detail-label">DOI:</span>
+          <span class="detail-value">{{ selectedItem?.data?.doi }}</span>
+        </div>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.description">
+          <span class="detail-label">Description:</span>
+          <p class="detail-description">{{ selectedItem?.data?.description }}</p>
+        </div>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.user">
+          <span class="detail-label">Author:</span>
+          <span class="detail-value">{{ selectedItem?.data?.user?.firstName }} {{ selectedItem?.data?.user?.lastName }}</span>
         </div>
       </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3>Organized Events</h3>
-          <i class="icon-event">📅</i>
+      
+      <!-- Event Details -->
+      <div *ngIf="selectedItem?.type === 'event'">
+        <div class="detail-group">
+          <span class="detail-label">Date:</span>
+          <span class="detail-value">{{ formatDate(selectedItem?.data?.startDate) }} - {{ formatDate(selectedItem?.data?.endDate) }}</span>
         </div>
-        <div class="stat-content">
-          <h2>{{ eventsOrganizedCount }}</h2>
-          <p>Events you organized</p>
+        
+        <div class="detail-group">
+          <span class="detail-label">Location:</span>
+          <span class="detail-value">{{ selectedItem?.data?.location || 'Online' }}</span>
         </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <h3>Participated Events</h3>
-          <i class="icon-group">👥</i>
+        
+        <div class="detail-group">
+          <span class="detail-label">Status:</span>
+          <span class="detail-value">{{ getEventStatus(selectedItem?.data) }}</span>
         </div>
-        <div class="stat-content">
-          <h2>{{ eventsParticipatedCount }}</h2>
-          <p>Events you attended</p>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.description">
+          <span class="detail-label">Description:</span>
+          <p class="detail-description">{{ selectedItem?.data?.description }}</p>
+        </div>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.createdBy">
+          <span class="detail-label">Organizer:</span>
+          <span class="detail-value">{{ selectedItem?.data?.createdBy?.firstName }} {{ selectedItem?.data?.createdBy?.lastName }}</span>
+        </div>
+        
+        <div class="detail-group" *ngIf="selectedItem?.data?.participants && selectedItem?.data?.participants.length > 0">
+          <span class="detail-label">Participants:</span>
+          <span class="detail-value">{{ selectedItem?.data?.participants.length }} registered</span>
         </div>
       </div>
     </div>
-
-    <!-- Recent Activity Feed -->
-    <div class="activity-feed">
-      <h2 class="section-title">Recent Activity</h2>
-      
-      <!-- Custom tabs -->
-      <div class="custom-tabs">
-        <div class="tab-headers">
-          <button 
-            [class.active]="activeTab === 'publications'" 
-            (click)="setActiveTab('publications')" 
-            class="tab-button">
-            Publications
-          </button>
-          <button 
-            [class.active]="activeTab === 'organized'" 
-            (click)="setActiveTab('organized')" 
-            class="tab-button">
-            Organized Events
-          </button>
-          <button 
-            [class.active]="activeTab === 'participated'" 
-            (click)="setActiveTab('participated')" 
-            class="tab-button">
-            Participated Events
-          </button>
-        </div>
-        
-        <!-- Tab content -->
-        <div class="tab-content">
-          <!-- Publications Tab -->
-          <div *ngIf="activeTab === 'publications'" class="feed-list">
-            <div *ngFor="let article of recentArticles" class="feed-item">
-              <div class="feed-item-content">
-                <i class="icon-feed">📄</i>
-                <div>
-                  <h3>{{ article.titre }}</h3>
-                  <p class="meta-info">
-                    <span>Status: {{ article.status }}</span>
-                    <span *ngIf="article.domain">Domain: {{ article.domain.nomDomaine }}</span>
-                  </p>
-                </div>
-              </div>
-              <!--<a class="btn-primary" [routerLink]="['/publications', article.id]">View Details</a>-->
-            </div>
-            
-            <div *ngIf="recentArticles.length === 0" class="empty-state">
-              <i class="icon-info">ℹ️</i>
-              <p>No publications found</p>
-              <a class="btn-primary" routerLink="/publications/new">
-                <span>+</span> Create Publication
-              </a>
-            </div>
-          </div>
-          
-          <!-- Organized Events Tab -->
-          <div *ngIf="activeTab === 'organized'" class="feed-list">
-            <div *ngFor="let event of organizedEvents" class="feed-item">
-              <div class="feed-item-content">
-                <i class="icon-feed">📅</i>
-                <div>
-                  <h3>{{ event.title }}</h3>
-                  <p class="meta-info">
-                    <span>Date: {{ formatDate(event.startDate) }} - {{ formatDate(event.endDate) }}</span>
-                    <span>Location: {{ event.location || 'Online' }}</span>
-                    <span>Status: {{ getEventStatus(event) }}</span>
-                    <span>Participants: {{ event.participants.length || 0 }}</span>
-                  </p>
-                </div>
-              </div>
-              <div class="feed-item-actions">
-                <!--<a class="btn-primary" [routerLink]="['/events', event.id]">View</a>-->
-                <button class="btn-secondary" (click)="editEvent(event.id)">
-                  <span>✏️</span> Edit
-                </button>
-              </div>
-            </div>
-            
-            <div *ngIf="organizedEvents.length === 0" class="empty-state">
-              <i class="icon-info">ℹ️</i>
-              <p>You haven't organized any events yet</p>
-              <a class="btn-primary" routerLink="/events/new">
-                <span>+</span> Create Event
-              </a>
-            </div>
-          </div>
-
-          <!-- Participated Events Tab -->
-          <div *ngIf="activeTab === 'participated'" class="feed-list">
-            <div *ngFor="let event of participatedEvents" class="feed-item">
-              <div class="feed-item-content">
-                <i class="icon-feed">⭐</i>
-                <div>
-                  <h3>{{ event.title }}</h3>
-                  <p class="meta-info">
-                    <span>Date: {{ formatDate(event.startDate) }} - {{ formatDate(event.endDate) }}</span>
-                    <span>Organizer: {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</span>
-                    <span>Status: {{ getEventStatus(event) }}</span>
-                  </p>
-                </div>
-              </div>
-              <!--<a class="btn-primary" [routerLink]="['/events', event.id]">View Details</a>-->
-            </div>
-            
-            <div *ngIf="participatedEvents.length === 0" class="empty-state">
-              <i class="icon-info">ℹ️</i>
-              <p>You haven't participated in any events yet</p>
-              <a class="btn-primary" routerLink="/events">
-                <span>🔍</span> Browse Eventss
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+    
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal($event)">Close</button>
+      <button *ngIf="selectedItem?.type === 'article'" class="btn-primary">Download Publication</button>
+      <button *ngIf="selectedItem?.type === 'event' && canJoinOrLeaveEvent()" class="btn-primary">
+        {{ isParticipatingInEvent() ? 'Leave Event' : 'Join Event' }}
+      </button>
     </div>
   </div>
 </div>

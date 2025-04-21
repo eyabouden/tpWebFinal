@@ -229,7 +229,101 @@ export class ResearchersComponent implements OnInit {
         });
     }
   }
+  showAddUserModal = false;
+newUserForm: any = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  role: '',
+  employmentDate: '',
+  institution: '',
+  grade: ''
+};
+
+// Add these methods to the ResearchersComponent class
+openAddUserModal(): void {
+  // Set default role based on current filter
+  this.newUserForm = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    role: this.roleFilter || 'UTILISATEUR',
+    employmentDate: '',
+    institution: '',
+    grade: ''
+  };
+  this.showAddUserModal = true;
+}
+
+closeAddUserModal(): void {
+  this.showAddUserModal = false;
+  this.newUserForm = {};
+}
+
+createUser(): void {
+  this.loading = true;
   
+  // Clone form to avoid modifying original
+  const userData = { ...this.newUserForm };
+  
+  // Validate required fields
+  if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
+    this.showNotification('Please fill in all required fields', 'error');
+    this.loading = false;
+    return;
+  }
+  
+  console.log('Creating user with data:', userData);
+  
+  this.userService.createUser(userData)
+    .subscribe({
+      next: (newUser) => {
+        // Add the new user to the list
+        this.users.push(newUser);
+        this.loading = false;
+        this.closeAddUserModal();
+        // Refresh the user list to ensure everything is up-to-date
+        this.loadUsers();
+        // Show success message
+        this.showNotification('User created successfully', 'success');
+      },
+      error: (err) => {
+        console.error('Error creating user:', err);
+        this.loading = false;
+        // Show error message
+        this.showNotification('Failed to create user: ' + (err.error?.message || err.message || 'Unknown error'), 'error');
+      }
+    });
+}
+
+// Add this method to the ResearchersComponent class
+onRoleChange(): void {
+  // If switching away from MODERATEUR, clear moderator fields
+  if (this.newUserForm.role !== 'MODERATEUR') {
+    this.newUserForm.employmentDate = '';
+    this.newUserForm.institution = '';
+    this.newUserForm.grade = '';
+  }
+}
+
+// Helper method for notifications
+showNotification(message: string, type: 'success' | 'error' | 'info'): void {
+
+  const notificationClass = type === 'success' ? 'success-notification' : 
+                            type === 'error' ? 'error-notification' : 'info-notification';
+                            
+  const notification = document.createElement('div');
+  notification.className = `notification ${notificationClass}`;
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  // Remove notification after 3 seconds
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 3000);
+}
   deleteUser(id: number): void {
     if (confirm('Are you sure you want to delete this user?')) {
       // Print the ID to console for debugging

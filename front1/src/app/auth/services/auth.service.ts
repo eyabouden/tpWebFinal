@@ -7,6 +7,9 @@ import { LoginRequest, RegisterRequest, LoginResponse, Role } from '../models/au
   providedIn: 'root'
 })
 export class AuthService {
+  getCurrentUserId(): number {
+    throw new Error('Method not implemented.');
+  }
   private apiUrl = 'http://localhost:8080/api/auth';
   private tokenKey = 'authToken';  // Consistent key for token storage
   private currentUserSubject = new BehaviorSubject<LoginResponse | null>(this.loadUserFromStorage());

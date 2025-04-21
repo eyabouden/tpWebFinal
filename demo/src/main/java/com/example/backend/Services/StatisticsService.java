@@ -358,6 +358,48 @@ public class StatisticsService {
         
         return result;
     }
+    /**
+ * Get count of articles created by a specific user
+ */
+public Long getArticleCountByUser(Long userId) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    
+    return articleRepository.countByUser(user);
+}
+
+/**
+ * Get count of events created by a specific user
+ */
+public Long getEventCountByUser(Long userId) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    
+    return eventRepository.countByCreatedBy(user);
+}
+
+/**
+ * Get count of events a user has attended as a participant
+ */
+public Long getEventsAttendedByUser(Long userId) {
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    
+    return eventRepository.countByParticipantsContaining(user);
+}
+
+/**
+ * Get comprehensive user statistics
+ */
+public Map<String, Long> getUserStatistics(Long userId) {
+    Map<String, Long> stats = new HashMap<>();
+    
+    stats.put("articlesCreated", getArticleCountByUser(userId));
+    stats.put("eventsCreated", getEventCountByUser(userId));
+    stats.put("eventsAttended", getEventsAttendedByUser(userId));
+    
+    return stats;
+}
     
     
     

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.backend.Entities.Article;
+import com.example.backend.Entities.User;
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
  
@@ -31,6 +32,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
 
     List<Article> findByStatus(String status);
+    Long countByUser(User user);
    
 }
 

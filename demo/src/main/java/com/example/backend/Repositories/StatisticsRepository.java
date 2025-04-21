@@ -27,7 +27,7 @@ public interface StatisticsRepository extends JpaRepository<Statistics, Long> {
        "GROUP BY d.nom_domaine, MONTH(s.action_date) " +
        "ORDER BY d.nom_domaine, MONTH(s.action_date)", 
        nativeQuery = true)
-List<Object[]> countDownloadsByDomain();
+    List<Object[]> countDownloadsByDomain();
 
     // Get monthly stats for views and downloads
     @Query(value = "SELECT YEAR(s.action_date) AS year, " +
